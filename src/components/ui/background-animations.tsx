@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
-import { Points, PointMaterial, Line, Float as FloatDrei } from "@react-three/drei"
+import { Points, PointMaterial, Line, Float as FloatDrei, Environment, Lightformer } from "@react-three/drei"
 
 import * as THREE from "three"
 import { useTheme } from "next-themes"
@@ -100,35 +100,66 @@ function ClassicParticles({ isDark }: { isDark: boolean }) {
 
 function ConstructScene({ isDark }: { isDark: boolean }) {
     const meshRef = React.useRef<THREE.InstancedMesh>(null!)
-    const count = 800
     const dummy = React.useMemo(() => new THREE.Object3D(), [])
 
-    // Target Shape: Torus Knot
+    // Cube Sphere Configuration
+    const segments = 14 // 14x14 grid per face
+    const count = 6 * segments * segments // 1176 tiles
+
+    // Target Shape: Cube Sphere (Perfect Quad Tiling)
     const [targets] = React.useState(() => {
-        const positions = []
-        const rotations = []
-        // Digital Brain: Sphere shape
-        const geometry = new THREE.IcosahedronGeometry(1.5, 3)
-        const posAttribute = geometry.attributes.position
+        const positions: THREE.Vector3[] = []
+        const rotations: THREE.Euler[] = []
+        const radius = 0.8
+        const dummyObj = new THREE.Object3D()
 
-        // Sample points from the geometry
-        for (let i = 0; i < count; i++) {
-            const index = Math.floor((i / count) * posAttribute.count)
-            const x = posAttribute.getX(index)
-            const y = posAttribute.getY(index)
-            const z = posAttribute.getZ(index)
-            positions.push(new THREE.Vector3(x, y, z))
+        // Helper to add a tile
+        const addTile = (u: number, v: number, faceIdx: number) => {
+            // Convert u,v (0..1) to range (-1..1)
+            const x = (u * 2) - 1
+            const y = (v * 2) - 1
 
-            const rot = new THREE.Euler(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI)
-            rotations.push(rot)
+            const pos = new THREE.Vector3()
+
+            // Map based on face
+            // 0: +x, 1: -x, 2: +y, 3: -y, 4: +z, 5: -z
+            switch (faceIdx) {
+                case 0: pos.set(1, y, -x); break
+                case 1: pos.set(-1, y, x); break
+                case 2: pos.set(x, 1, -y); break
+                case 3: pos.set(x, -1, y); break
+                case 4: pos.set(x, y, 1); break
+                case 5: pos.set(-x, y, -1); break
+            }
+
+            // Project to sphere
+            pos.normalize().multiplyScalar(radius)
+            positions.push(pos)
+
+            // Align rotation to face outwards
+            dummyObj.position.copy(pos)
+            dummyObj.lookAt(pos.clone().multiplyScalar(2)) // Look outwards from center
+            rotations.push(dummyObj.rotation.clone())
+        }
+
+        // Generate tiles for all 6 faces
+        for (let f = 0; f < 6; f++) {
+            for (let i = 0; i < segments; i++) {
+                for (let j = 0; j < segments; j++) {
+                    // Center of the tile
+                    const u = (i + 0.5) / segments
+                    const v = (j + 0.5) / segments
+                    addTile(u, v, f)
+                }
+            }
         }
         return { positions, rotations }
     })
 
     // Random Start Positions (Chaos)
     const [starts] = React.useState(() => {
-        const positions = []
-        const rotations = []
+        const positions: THREE.Vector3[] = []
+        const rotations: THREE.Euler[] = []
         for (let i = 0; i < count; i++) {
             positions.push(new THREE.Vector3((Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10))
             rotations.push(new THREE.Euler(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI))
@@ -156,21 +187,24 @@ function ConstructScene({ isDark }: { isDark: boolean }) {
             // Interpolate position
             const pos = new THREE.Vector3().lerpVectors(starts.positions[i], targets.positions[i], ease)
 
+
             // Interpolate rotation
             const rotStart = new THREE.Quaternion().setFromEuler(starts.rotations[i])
             const rotEnd = new THREE.Quaternion().setFromEuler(targets.rotations[i])
-            // Add some continuous rotation when assembled
-            const rotActive = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), time * 0.5)
-            if (progress > 0.8) rotEnd.multiply(rotActive)
 
+            // Slerp rotation
             const rot = new THREE.Quaternion().slerpQuaternions(rotStart, rotEnd, ease)
-
             dummy.position.copy(pos)
             dummy.rotation.setFromQuaternion(rot)
 
             // Scale up as they assemble
-            const scale = 0.05 + ease * 0.05
-            dummy.scale.set(scale, scale, scale)
+            // Adjusted for perfect tiling (Cube Sphere)
+            // Radius 0.8, 14 segments.
+            // Arc length approx (PI * 0.8) / 2 / 14 ~ 0.09
+            // But at corners it's smaller.
+            // 0.14 seems safe to cover gaps.
+            const scale = 0.02 + ease * 0.14
+            dummy.scale.set(scale, scale, 0.02) // Flatten the cube into a tile (z scale small)
 
             dummy.updateMatrix()
             meshRef.current.setMatrixAt(i, dummy.matrix)
@@ -182,15 +216,53 @@ function ConstructScene({ isDark }: { isDark: boolean }) {
     })
 
     return (
-        <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
-            <ResetCamera />
-            <boxGeometry args={[1, 1, 1]} />
-            <meshStandardMaterial
-                color={isDark ? "#E5E5E5" : "#C0C0C0"}
-                metalness={0.6}
-                roughness={0.2}
-            />
-        </instancedMesh>
+        <group>
+            {/* Background Color to ensure "void" reflections are grey, not black */}
+            <color attach="background" args={['#1a1a1a']} />
+
+            {/* Synthetic Environment to avoid 429 errors from external HDRIs */}
+            <Environment resolution={512}>
+                <group rotation={[-Math.PI / 2, 0, 0]}>
+                    {/* Massive Background Light for base reflection */}
+                    <Lightformer intensity={4} rotation-x={Math.PI / 2} position={[0, 5, -9]} scale={[10, 10, 1]} />
+
+                    {/* Top & Bottom - White Studio Lights */}
+                    <Lightformer intensity={5} rotation-x={Math.PI / 2} position={[0, 10, 0]} scale={[10, 10, 1]} />
+                    <Lightformer intensity={5} rotation-x={-Math.PI / 2} position={[0, -10, 0]} scale={[10, 10, 1]} />
+
+                    {/* Sides - White Studio Lights */}
+                    <Lightformer intensity={5} rotation-y={Math.PI / 2} position={[-10, 0, 0]} scale={[10, 10, 1]} />
+                    <Lightformer intensity={5} rotation-y={-Math.PI / 2} position={[10, 0, 0]} scale={[10, 10, 1]} />
+
+                    {/* Diagonals / Rings for complexity - Pure White */}
+                    <Lightformer type="ring" intensity={10} rotation-y={Math.PI / 2} position={[-0.1, -1, -5]} scale={10} />
+                    <Lightformer type="ring" intensity={5} rotation-y={0} position={[0, 0, -5]} scale={10} />
+
+                    {/* Random scattered lights for "sparkle" - Pure White */}
+                    <Lightformer intensity={8} rotation-y={Math.PI / 4} position={[5, 5, -5]} scale={[2, 2, 1]} />
+                    <Lightformer intensity={8} rotation-y={-Math.PI / 4} position={[-5, 5, -5]} scale={[2, 2, 1]} />
+                    <Lightformer intensity={8} rotation-y={Math.PI / 4} position={[5, -5, -5]} scale={[2, 2, 1]} />
+                    <Lightformer intensity={8} rotation-y={-Math.PI / 4} position={[-5, -5, -5]} scale={[2, 2, 1]} />
+                </group>
+            </Environment>
+
+            {/* Direct Light for specular highlights - Pure White, Tripled Sources */}
+            <pointLight position={[10, 10, 10]} intensity={3} color="#ffffff" />
+            <pointLight position={[-10, -10, -10]} intensity={3} color="#ffffff" />
+            <pointLight position={[10, -10, 10]} intensity={3} color="#ffffff" />
+            <pointLight position={[-10, 10, -10]} intensity={3} color="#ffffff" />
+
+            <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
+                <ResetCamera />
+                <boxGeometry args={[1, 1, 1]} />
+                <meshStandardMaterial
+                    color="#aaaaaa"
+                    metalness={0.8}
+                    roughness={0.2}
+                    flatShading={true}
+                />
+            </instancedMesh>
+        </group>
     )
 }
 
@@ -396,7 +468,7 @@ function CityFlightScene({ isDark }: { isDark: boolean }) {
             {/* Infinite Ground Grid */}
             <gridHelper
                 ref={gridRef}
-                args={[10000, 250, isDark ? 0x555555 : 0x000000, isDark ? 0x222222 : 0x000000]}
+                args={[10000, 250, isDark ? 0x555555 : 0x555555, isDark ? 0x222222 : 0x888888]}
                 position={[0, -1, 0]}
             />
 
@@ -406,7 +478,7 @@ function CityFlightScene({ isDark }: { isDark: boolean }) {
             </instancedMesh>
 
             <instancedMesh ref={sticksRef} args={[undefined, undefined, cityData.current?.stickInstances.length || 0]} frustumCulled={false}>
-                <cylinderGeometry args={[0.08, 0.08, 1, 6]} />
+                <cylinderGeometry args={[0.3, 0.3, 1, 6]} />
                 <meshBasicMaterial color="#ff00ff" transparent opacity={0.6} />
             </instancedMesh>
         </group>
