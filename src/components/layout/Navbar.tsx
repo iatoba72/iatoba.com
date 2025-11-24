@@ -28,8 +28,8 @@ export function Navbar() {
     return (
         <header
             className={`sticky top-0 z-50 w-full border-b transition-all duration-300 ${isScrolled
-                    ? "bg-background/80 backdrop-blur-md border-border/40"
-                    : "bg-transparent border-transparent"
+                ? "bg-background/80 backdrop-blur-md border-border/40"
+                : "bg-transparent border-transparent"
                 }`}
         >
             <div className="container flex h-16 items-center justify-between px-4 md:px-6">
@@ -54,7 +54,7 @@ export function Navbar() {
                     <ModeToggle />
                     <Sheet>
                         <SheetTrigger asChild>
-                            <Button variant="ghost" size="icon" className="md:hidden">
+                            <Button variant="ghost" size="icon" className="md:hidden" suppressHydrationWarning>
                                 <Menu className="h-5 w-5" />
                                 <span className="sr-only">Toggle menu</span>
                             </Button>

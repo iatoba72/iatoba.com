@@ -1,0 +1,414 @@
+"use client"
+
+import * as React from "react"
+import { Canvas, useFrame, useThree } from "@react-three/fiber"
+import { Points, PointMaterial, Line, Float as FloatDrei } from "@react-three/drei"
+
+import * as THREE from "three"
+import { useTheme } from "next-themes"
+
+type AnimationType = "classic" | "construct" | "cityflight"
+
+interface BackgroundAnimationsProps {
+    type?: AnimationType
+}
+
+export function BackgroundAnimations({ type = "classic" }: BackgroundAnimationsProps) {
+    const { theme } = useTheme()
+    const isDark = theme === "dark"
+
+    const [eventSource, setEventSource] = React.useState<HTMLElement | null>(null)
+
+    React.useEffect(() => {
+        setEventSource(document.body)
+    }, [])
+
+    return (
+        <div className="absolute inset-0 z-0 h-full w-full overflow-hidden pointer-events-none">
+            <Canvas camera={{ position: [0, 0, 4] }} eventSource={eventSource as HTMLElement} eventPrefix="client">
+                {/* Lighting is essential for solid meshes */}
+                <ambientLight intensity={0.5} />
+                <pointLight position={[10, 10, 10]} intensity={1} />
+                <pointLight position={[-10, -10, -10]} intensity={0.5} />
+                <pointLight position={[-10, -10, -10]} intensity={0.5} />
+                <hemisphereLight intensity={0.5} color="#ffffff" groundColor="#000000" />
+
+                <React.Suspense fallback={null}>
+                    {type === "classic" && <ClassicParticles isDark={isDark} />}
+                    {type === "construct" && <ConstructScene isDark={isDark} />}
+                    {type === "cityflight" && <CityFlightScene isDark={isDark} />}
+                </React.Suspense>
+            </Canvas>
+        </div>
+    )
+}
+
+function ResetCamera() {
+    const { camera } = useThree()
+    React.useEffect(() => {
+        camera.position.set(0, 0, 4)
+        camera.rotation.set(0, 0, 0)
+    }, [camera])
+    return null
+}
+
+function ClassicParticles({ isDark }: { isDark: boolean }) {
+    const ref = React.useRef<THREE.Points>(null!)
+
+    // Custom sphere generation to avoid NaN issues from external library
+    const [sphere] = React.useState(() => {
+        const count = 5000;
+        const radius = 7;
+        const points = new Float32Array(count * 3);
+        for (let i = 0; i < count; i++) {
+            const u = Math.random();
+            const v = Math.random();
+            const theta = 2 * Math.PI * u;
+            const phi = Math.acos(2 * v - 1);
+            const r = Math.cbrt(Math.random()) * radius;
+            const x = r * Math.sin(phi) * Math.cos(theta);
+            const y = r * Math.sin(phi) * Math.sin(theta);
+            const z = r * Math.cos(phi);
+            points[i * 3] = x;
+            points[i * 3 + 1] = y;
+            points[i * 3 + 2] = z;
+        }
+        return points;
+    })
+
+    useFrame((state, delta) => {
+        const speedMultiplier = 1 + (state.pointer.x || 0) * 2
+        ref.current.rotation.x -= (delta / 10) * speedMultiplier
+        ref.current.rotation.y -= (delta / 15) * speedMultiplier
+    })
+
+    return (
+        <group rotation={[0, 0, Math.PI / 4]}>
+            <ResetCamera />
+            <Points ref={ref} positions={sphere} stride={3} frustumCulled={false}>
+                <PointMaterial
+                    transparent
+                    color={isDark ? "#ffffff" : "#000000"}
+                    size={0.016}
+                    sizeAttenuation={true}
+                    depthWrite={false}
+                />
+            </Points>
+        </group>
+    )
+}
+
+function ConstructScene({ isDark }: { isDark: boolean }) {
+    const meshRef = React.useRef<THREE.InstancedMesh>(null!)
+    const count = 800
+    const dummy = React.useMemo(() => new THREE.Object3D(), [])
+
+    // Target Shape: Torus Knot
+    const [targets] = React.useState(() => {
+        const positions = []
+        const rotations = []
+        // Digital Brain: Sphere shape
+        const geometry = new THREE.IcosahedronGeometry(1.5, 3)
+        const posAttribute = geometry.attributes.position
+
+        // Sample points from the geometry
+        for (let i = 0; i < count; i++) {
+            const index = Math.floor((i / count) * posAttribute.count)
+            const x = posAttribute.getX(index)
+            const y = posAttribute.getY(index)
+            const z = posAttribute.getZ(index)
+            positions.push(new THREE.Vector3(x, y, z))
+
+            const rot = new THREE.Euler(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI)
+            rotations.push(rot)
+        }
+        return { positions, rotations }
+    })
+
+    // Random Start Positions (Chaos)
+    const [starts] = React.useState(() => {
+        const positions = []
+        const rotations = []
+        for (let i = 0; i < count; i++) {
+            positions.push(new THREE.Vector3((Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10))
+            rotations.push(new THREE.Euler(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI))
+        }
+        return { positions, rotations }
+    })
+
+    useFrame((state) => {
+        if (!meshRef.current) return
+
+        // Mouse control: -1 (Left) = Chaos, 1 (Right) = Order
+        // Map pointer.x (-1 to 1) to progress (0 to 1)
+        const targetProgress = THREE.MathUtils.clamp(((state.pointer.x || 0) + 1) / 2, 0, 1)
+
+        const time = state.clock.getElapsedTime()
+
+        for (let i = 0; i < count; i++) {
+            // Per-instance delay for "wave" effect
+            const delay = (i / count) * 0.5
+            const progress = THREE.MathUtils.clamp(targetProgress * 1.5 - delay, 0, 1)
+
+            // Cubic ease out for "snap" feel
+            const ease = 1 - Math.pow(1 - progress, 3)
+
+            // Interpolate position
+            const pos = new THREE.Vector3().lerpVectors(starts.positions[i], targets.positions[i], ease)
+
+            // Interpolate rotation
+            const rotStart = new THREE.Quaternion().setFromEuler(starts.rotations[i])
+            const rotEnd = new THREE.Quaternion().setFromEuler(targets.rotations[i])
+            // Add some continuous rotation when assembled
+            const rotActive = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), time * 0.5)
+            if (progress > 0.8) rotEnd.multiply(rotActive)
+
+            const rot = new THREE.Quaternion().slerpQuaternions(rotStart, rotEnd, ease)
+
+            dummy.position.copy(pos)
+            dummy.rotation.setFromQuaternion(rot)
+
+            // Scale up as they assemble
+            const scale = 0.05 + ease * 0.05
+            dummy.scale.set(scale, scale, scale)
+
+            dummy.updateMatrix()
+            meshRef.current.setMatrixAt(i, dummy.matrix)
+        }
+        meshRef.current.instanceMatrix.needsUpdate = true
+
+        // Rotate entire group slowly
+        meshRef.current.rotation.y = time * 0.1
+    })
+
+    return (
+        <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
+            <ResetCamera />
+            <boxGeometry args={[1, 1, 1]} />
+            <meshStandardMaterial
+                color={isDark ? "#E5E5E5" : "#C0C0C0"}
+                metalness={0.6}
+                roughness={0.2}
+            />
+        </instancedMesh>
+    )
+}
+
+function CityFlightScene({ isDark }: { isDark: boolean }) {
+    const spheresRef = React.useRef<THREE.InstancedMesh>(null!)
+    const sticksRef = React.useRef<THREE.InstancedMesh>(null!)
+    const groupRef = React.useRef<THREE.Group>(null!)
+    const gridRef = React.useRef<THREE.GridHelper>(null!)
+
+    // Configuration
+    const buildingCount = 120 // Doubled density
+    const rowSpacing = 100 // Increased spacing for further generation
+    const corridorWidth = 50 // Wider corridor
+
+    // State for camera movement
+    const speed = 80 // Doubled speed
+    const lateralSpeed = 60
+    const cameraZ = React.useRef(0)
+    const cameraX = React.useRef(0)
+
+    // Generate City Layout
+    const cityData = React.useRef<{
+        buildings: {
+            x: number,
+            z: number,
+            width: number,
+            depth: number,
+            height: number,
+            color: THREE.Color,
+            nodes: THREE.Vector3[]
+        }[],
+        sphereInstances: { buildingIndex: number, localPos: THREE.Vector3 }[],
+        stickInstances: { buildingIndex: number, start: THREE.Vector3, end: THREE.Vector3 }[]
+    } | null>(null)
+
+    // Initialize Data
+    React.useMemo(() => {
+        const buildings = []
+        const sphereInstances: { buildingIndex: number, localPos: THREE.Vector3 }[] = []
+        const stickInstances: { buildingIndex: number, start: THREE.Vector3, end: THREE.Vector3 }[] = []
+
+        for (let i = 0; i < buildingCount; i++) {
+            // Initial Generation: Spread evenly over 2000 units
+            const z = -Math.random() * 2000
+
+            // Corridor Logic
+            const side = Math.random() > 0.5 ? 1 : -1
+            const offset = corridorWidth + Math.random() * 300 // Wider spread
+            const x = side * offset
+
+            const height = 100 + Math.random() * 300 // Taller buildings
+            const isMega = Math.random() > 0.95
+            const finalHeight = isMega ? 500 + Math.random() * 500 : height
+            const width = 20 + Math.random() * 15
+            const depth = 20 + Math.random() * 15
+
+            const building = {
+                x,
+                z,
+                width,
+                depth,
+                height: finalHeight,
+                color: new THREE.Color().setHSL(Math.random() * 0.2 + 0.5, 0.8, 0.5),
+                nodes: [] as THREE.Vector3[]
+            }
+
+            // Generate Nodes & Floors
+            const halfW = width / 2
+            const halfD = depth / 2
+            const floorHeight = 15 + Math.random() * 10
+            const floors = Math.floor(finalHeight / floorHeight)
+
+            for (let f = 0; f <= floors; f++) {
+                const y = f * floorHeight
+                if (y > finalHeight) break
+
+                const floorNodes = [
+                    new THREE.Vector3(-halfW, y, -halfD),
+                    new THREE.Vector3(halfW, y, -halfD),
+                    new THREE.Vector3(halfW, y, halfD),
+                    new THREE.Vector3(-halfW, y, halfD)
+                ]
+
+                const baseIdx = building.nodes.length
+                floorNodes.forEach(n => {
+                    building.nodes.push(n)
+                    sphereInstances.push({ buildingIndex: i, localPos: n })
+                })
+
+                stickInstances.push({ buildingIndex: i, start: floorNodes[0], end: floorNodes[1] })
+                stickInstances.push({ buildingIndex: i, start: floorNodes[1], end: floorNodes[2] })
+                stickInstances.push({ buildingIndex: i, start: floorNodes[2], end: floorNodes[3] })
+                stickInstances.push({ buildingIndex: i, start: floorNodes[3], end: floorNodes[0] })
+
+                if (f > 0) {
+                    const prevBaseIdx = baseIdx - 4
+                    stickInstances.push({ buildingIndex: i, start: building.nodes[prevBaseIdx], end: building.nodes[baseIdx] })
+                    stickInstances.push({ buildingIndex: i, start: building.nodes[prevBaseIdx + 1], end: building.nodes[baseIdx + 1] })
+                    stickInstances.push({ buildingIndex: i, start: building.nodes[prevBaseIdx + 2], end: building.nodes[baseIdx + 2] })
+                    stickInstances.push({ buildingIndex: i, start: building.nodes[prevBaseIdx + 3], end: building.nodes[baseIdx + 3] })
+                }
+            }
+
+            buildings.push(building)
+        }
+
+        cityData.current = { buildings, sphereInstances, stickInstances }
+    }, [])
+
+    useFrame((state, delta) => {
+        if (!spheresRef.current || !sticksRef.current || !cityData.current) return
+
+        cameraZ.current -= speed * delta
+        state.camera.position.z = cameraZ.current
+        state.camera.position.y = 40 // Higher camera
+
+        const inputX = state.pointer.x
+        cameraX.current += inputX * lateralSpeed * delta
+
+        state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, cameraX.current, 0.1)
+        state.camera.rotation.z = THREE.MathUtils.lerp(state.camera.rotation.z, -inputX * 0.25, 0.1)
+
+        // Update Grid Position to simulate infinite ground
+        if (gridRef.current) {
+            // Move grid with camera but snap to grid size to look infinite
+            const gridSize = 40 // Matches gridHelper divisions/size ratio (10000/250 = 40)
+            gridRef.current.position.z = cameraZ.current - (cameraZ.current % gridSize)
+            // gridRef.current.position.x = cameraX.current - (cameraX.current % gridSize) // Disabled lateral movement
+        }
+
+        const dummy = new THREE.Object3D()
+        const p1 = new THREE.Vector3()
+        const p2 = new THREE.Vector3()
+        const up = new THREE.Vector3(0, 1, 0)
+
+        // Recycling
+        cityData.current.buildings.forEach((building) => {
+            const isBehind = building.z > cameraZ.current + 10
+            const isOutOfView = Math.abs(building.x - cameraX.current) > 400
+
+            if (isBehind || isOutOfView) {
+                // Recycle: Place further ahead to maintain consistent density
+                building.z = cameraZ.current - 1000 - Math.random() * 1000
+
+                const side = Math.random() > 0.5 ? 1 : -1
+                const offset = corridorWidth + Math.random() * 300
+                building.x = cameraX.current + side * offset
+            }
+        })
+
+        // Update Spheres
+        cityData.current.sphereInstances.forEach((instance, idx) => {
+            const building = cityData.current!.buildings[instance.buildingIndex]
+
+            dummy.position.set(
+                building.x + instance.localPos.x,
+                instance.localPos.y,
+                building.z + instance.localPos.z
+            )
+            dummy.scale.setScalar(1)
+            dummy.rotation.set(0, 0, 0)
+            dummy.updateMatrix()
+            spheresRef.current.setMatrixAt(idx, dummy.matrix)
+        })
+
+        // Update Sticks
+        cityData.current.stickInstances.forEach((instance, idx) => {
+            const building = cityData.current!.buildings[instance.buildingIndex]
+
+            p1.set(
+                building.x + instance.start.x,
+                instance.start.y,
+                building.z + instance.start.z
+            )
+            p2.set(
+                building.x + instance.end.x,
+                instance.end.y,
+                building.z + instance.end.z
+            )
+
+            dummy.position.copy(p1).add(p2).multiplyScalar(0.5)
+
+            const dir = new THREE.Vector3().subVectors(p2, p1).normalize()
+            dummy.quaternion.setFromUnitVectors(up, dir)
+
+            const len = p1.distanceTo(p2)
+            dummy.scale.set(1, len, 1)
+
+            dummy.updateMatrix()
+            sticksRef.current.setMatrixAt(idx, dummy.matrix)
+        })
+
+        spheresRef.current.instanceMatrix.needsUpdate = true
+        sticksRef.current.instanceMatrix.needsUpdate = true
+    })
+
+    return (
+        <group ref={groupRef}>
+            <fogExp2 attach="fog" args={['#050510', 0.002]} />
+            <ambientLight intensity={0.2} />
+            <pointLight position={[0, 20, 0]} intensity={1} distance={50} color="#00ffff" />
+
+            {/* Infinite Ground Grid */}
+            <gridHelper
+                ref={gridRef}
+                args={[10000, 250, isDark ? 0x555555 : 0x000000, isDark ? 0x222222 : 0x000000]}
+                position={[0, -1, 0]}
+            />
+
+            <instancedMesh ref={spheresRef} args={[undefined, undefined, cityData.current?.sphereInstances.length || 0]} frustumCulled={false}>
+                <sphereGeometry args={[0.4, 8, 8]} />
+                <meshBasicMaterial color="#00ffff" />
+            </instancedMesh>
+
+            <instancedMesh ref={sticksRef} args={[undefined, undefined, cityData.current?.stickInstances.length || 0]} frustumCulled={false}>
+                <cylinderGeometry args={[0.08, 0.08, 1, 6]} />
+                <meshBasicMaterial color="#ff00ff" transparent opacity={0.6} />
+            </instancedMesh>
+        </group>
+    )
+}
