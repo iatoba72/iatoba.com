@@ -43,12 +43,14 @@ export function BackgroundAnimations({ type = "classic" }: BackgroundAnimationsP
     )
 }
 
-function ResetCamera() {
-    const { camera } = useThree()
+function ResetScene() {
+    const { camera, scene } = useThree()
     React.useEffect(() => {
         camera.position.set(0, 0, 4)
         camera.rotation.set(0, 0, 0)
-    }, [camera])
+        scene.fog = null
+        // We don't reset background here as it might be handled by the parent or theme
+    }, [camera, scene])
     return null
 }
 
@@ -77,6 +79,7 @@ function ClassicParticles({ isDark }: { isDark: boolean }) {
     })
 
     useFrame((state, delta) => {
+        if (!ref.current) return
         const speedMultiplier = 1 + (state.pointer.x || 0) * 2
         ref.current.rotation.x -= (delta / 10) * speedMultiplier
         ref.current.rotation.y -= (delta / 15) * speedMultiplier
@@ -84,7 +87,7 @@ function ClassicParticles({ isDark }: { isDark: boolean }) {
 
     return (
         <group rotation={[0, 0, Math.PI / 4]}>
-            <ResetCamera />
+            <ResetScene />
             <Points ref={ref} positions={sphere} stride={3} frustumCulled={false}>
                 <PointMaterial
                     transparent
@@ -253,10 +256,10 @@ function ConstructScene({ isDark }: { isDark: boolean }) {
             <pointLight position={[-10, 10, -10]} intensity={3} color="#ffffff" />
 
             <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
-                <ResetCamera />
+                <ResetScene />
                 <boxGeometry args={[1, 1, 1]} />
                 <meshStandardMaterial
-                    color="#aaaaaa"
+                    color={isDark ? "#333333" : "#aaaaaa"}
                     metalness={0.8}
                     roughness={0.2}
                     flatShading={true}

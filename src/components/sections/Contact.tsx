@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Mail, MapPin, Phone, Send } from "lucide-react"
+import { Mail, MapPin, Phone, Send, Linkedin } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
     Card,
@@ -16,7 +16,7 @@ import { Textarea } from "@/components/ui/textarea"
 export function Contact() {
     return (
         <section id="contact" className="py-20 md:py-32">
-            <div className="container px-4 md:px-6">
+            <div className="w-full max-w-screen-2xl mx-auto px-4 md:px-6">
                 <div className="flex flex-col items-center space-y-4 text-center mb-12">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -54,7 +54,7 @@ export function Contact() {
                                     </div>
                                     <div>
                                         <p className="font-medium">Email</p>
-                                        <p className="text-muted-foreground">hello@iatoba.com</p>
+                                        <p className="text-muted-foreground">iatoba@gmail.com</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-4">
@@ -63,7 +63,7 @@ export function Contact() {
                                     </div>
                                     <div>
                                         <p className="font-medium">Phone</p>
-                                        <p className="text-muted-foreground">+1 (555) 123-4567</p>
+                                        <p className="text-muted-foreground">+54 9 11 5322 6235</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-4">
@@ -72,7 +72,18 @@ export function Contact() {
                                     </div>
                                     <div>
                                         <p className="font-medium">Location</p>
-                                        <p className="text-muted-foreground">San Francisco, CA</p>
+                                        <p className="text-muted-foreground">Buenos Aires, Argentina</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                                        <Linkedin className="h-5 w-5" />
+                                    </div>
+                                    <div>
+                                        <p className="font-medium">LinkedIn</p>
+                                        <a href="https://www.linkedin.com/in/iatoba/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:underline">
+                                            linkedin.com/in/iatoba
+                                        </a>
                                     </div>
                                 </div>
                             </CardContent>

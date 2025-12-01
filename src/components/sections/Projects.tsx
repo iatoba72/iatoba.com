@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 import { motion } from "framer-motion"
 import { ExternalLink, Github } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
@@ -18,51 +19,73 @@ import {
 const projects = [
     {
         id: 1,
-        title: "AI Workflow Automation",
-        description: "A complex n8n workflow that automates customer support ticket classification using OpenAI's GPT-4.",
-        tags: ["n8n", "OpenAI", "Python", "Webhook"],
+        title: "Self‑Hosted AI Lab & Automation Hub",
+        description: "A self-hosted AI lab to run multiple LLMs and AI tools locally, orchestrated with Docker and n8n.",
+        tags: ["Docker", "vLLM", "OpenWebUI", "n8n"],
         links: {
             demo: "#",
             github: "#",
         },
-        category: "Automation",
+        category: "AI & DevOps",
     },
     {
         id: 2,
-        title: "E-commerce Dashboard",
-        description: "Real-time analytics dashboard for e-commerce stores built with Next.js and Tremor.",
-        tags: ["Next.js", "TypeScript", "Tailwind", "Supabase"],
+        title: "Full‑Stack Portfolio & 3D Landing",
+        description: "A personal portfolio site showcasing modern stack capabilities with interactive 3D elements.",
+        tags: ["Next.js", "Three.js", "Docker", "Nginx"],
         links: {
             demo: "#",
             github: "#",
         },
-        category: "Web App",
+        category: "Web & 3D",
     },
     {
         id: 3,
-        title: "Infrastructure as Code",
-        description: "Complete Terraform setup for deploying a scalable microservices architecture on AWS.",
-        tags: ["Terraform", "AWS", "Docker", "CI/CD"],
+        title: "Interactive 3D Product Configurator",
+        description: "A real-time 3D configurator allowing users to customize products with instant visual feedback.",
+        tags: ["Three.js", "React Three Fiber", "WebGL", "Zustand"],
         links: {
             demo: "#",
             github: "#",
         },
-        category: "DevOps",
+        category: "Web & 3D",
     },
     {
         id: 4,
-        title: "Smart Home Hub",
-        description: "IoT dashboard for managing smart home devices with automated routines and energy monitoring.",
-        tags: ["React", "Node.js", "MQTT", "InfluxDB"],
+        title: "E2E Testing Framework",
+        description: "A CodeceptJS-based end-to-end testing framework integrated into CI/CD pipelines.",
+        tags: ["CodeceptJS", "CI/CD", "Azure DevOps", "QA"],
         links: {
             demo: "#",
             github: "#",
         },
-        category: "IoT",
+        category: "QA & Testing",
+    },
+    {
+        id: 5,
+        title: "Secure Hybrid Cloud Gateway",
+        description: "A secure access gateway bridging on-premise legacy systems with modern cloud applications using zero-trust principles.",
+        tags: ["Docker", "Nginx", "OAuth2", "WireGuard"],
+        links: {
+            demo: "#",
+            github: "#",
+        },
+        category: "DevOps & IoT",
+    },
+    {
+        id: 6,
+        title: "Homelab Monitoring Dashboard",
+        description: "A centralized dashboard to monitor health and metrics of self-hosted AI and automation services.",
+        tags: ["Grafana", "Prometheus", "Docker", "React"],
+        links: {
+            demo: "#",
+            github: "#",
+        },
+        category: "DevOps & IoT",
     },
 ]
 
-const categories = ["All", "Automation", "Web App", "DevOps", "IoT"]
+const categories = ["All", "AI & DevOps", "Web & 3D", "Automation", "QA & Testing", "Web & DevOps", "DevOps & IoT"]
 
 export function Projects() {
     const [activeCategory, setActiveCategory] = React.useState("All")
@@ -73,7 +96,7 @@ export function Projects() {
 
     return (
         <section id="projects" className="py-20 md:py-32 bg-muted/30">
-            <div className="container px-4 md:px-6">
+            <div className="w-full max-w-screen-2xl mx-auto px-4 md:px-6">
                 <div className="flex flex-col items-center space-y-4 text-center mb-12">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -114,11 +137,22 @@ export function Projects() {
                         >
                             <Card className="h-full flex flex-col overflow-hidden border-muted-foreground/10 hover:border-primary/50 transition-colors duration-300">
                                 <div className="aspect-video w-full bg-muted relative overflow-hidden group">
-                                    <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 group-hover:scale-105 transition-transform duration-500" />
-                                    {/* Placeholder for project image */}
-                                    <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/50 font-medium">
-                                        Project Image
-                                    </div>
+                                    {project.id === 1 ? (
+                                        <Image
+                                            src="/ai-workflow-automation.jpg"
+                                            alt={project.title}
+                                            fill
+                                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                    ) : (
+                                        <>
+                                            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 group-hover:scale-105 transition-transform duration-500" />
+                                            {/* Placeholder for project image */}
+                                            <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/50 font-medium">
+                                                Project Image
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                                 <CardHeader>
                                     <div className="flex justify-between items-start">
@@ -139,13 +173,13 @@ export function Projects() {
                                     </div>
                                 </CardContent>
                                 <CardFooter className="flex gap-2 pt-4">
-                                    <Button variant="outline" size="sm" className="w-full" asChild>
+                                    <Button variant="outline" size="sm" className="flex-1" asChild>
                                         <a href={project.links.github} target="_blank" rel="noopener noreferrer">
                                             <Github className="mr-2 h-4 w-4" />
                                             Code
                                         </a>
                                     </Button>
-                                    <Button size="sm" className="w-full" asChild>
+                                    <Button size="sm" className="flex-1" asChild>
                                         <a href={project.links.demo} target="_blank" rel="noopener noreferrer">
                                             <ExternalLink className="mr-2 h-4 w-4" />
                                             Demo

@@ -3,6 +3,7 @@
 import * as React from "react"
 import { motion } from "framer-motion"
 import { ArrowRight, Sparkles, Box, Network } from "lucide-react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { BackgroundAnimations } from "@/components/ui/background-animations"
 
@@ -60,11 +61,11 @@ export function Hero() {
                         transition={{ duration: 0.5 }}
                         className="space-y-4"
                     >
-                        <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
+                        <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70 drop-shadow-lg">
                             Building Digital <br className="hidden sm:inline" />
-                            <span className="text-primary">Excellence</span>
+                            <span className="text-primary drop-shadow-md">Excellence</span>
                         </h1>
-                        <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
+                        <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl drop-shadow-md">
                             I craft high-performance web applications with modern technologies.
                             Specializing in Next.js, React, and automated workflows.
                         </p>
@@ -75,12 +76,16 @@ export function Hero() {
                         transition={{ duration: 0.5, delay: 0.2 }}
                         className="flex flex-col sm:flex-row gap-4"
                     >
-                        <Button size="lg" className="h-12 px-8">
-                            View Projects
-                            <ArrowRight className="ml-2 h-4 w-4" />
+                        <Button size="lg" className="h-12 px-8" asChild>
+                            <Link href="#projects">
+                                View Projects
+                                <ArrowRight className="ml-2 h-4 w-4" />
+                            </Link>
                         </Button>
-                        <Button size="lg" variant="outline" className="h-12 px-8">
-                            Contact Me
+                        <Button size="lg" variant="outline" className="h-12 px-8" asChild>
+                            <Link href="#contact">
+                                Contact Me
+                            </Link>
                         </Button>
                     </motion.div>
                 </div>

@@ -12,41 +12,41 @@ import {
 
 const services = [
     {
-        title: "Workflow Automation",
-        description: "Streamline business processes with custom n8n workflows and AI integration.",
-        icon: Bot,
-    },
-    {
-        title: "Web Development",
-        description: "Build high-performance, responsive web applications using Next.js and React.",
+        title: "Full‑Stack Web & 3D Experiences",
+        description: "Modern web apps with React/Next.js and interactive 3D elements using Three.js.",
         icon: Globe,
     },
     {
-        title: "DevOps & Infrastructure",
-        description: "Automate deployment pipelines and manage cloud infrastructure with Terraform.",
-        icon: Terminal,
-    },
-    {
-        title: "UI/UX Implementation",
-        description: "Translate designs into pixel-perfect, accessible, and interactive interfaces.",
-        icon: LayoutTemplate,
-    },
-    {
-        title: "Backend Systems",
-        description: "Design robust APIs and database architectures for scalable applications.",
+        title: "API Design & Backend Logic",
+        description: "Clean RESTful APIs and integrations with third-party services (Auth, Payments, CRM).",
         icon: Database,
     },
     {
-        title: "Custom Scripting",
-        description: "Develop specialized scripts to solve unique technical challenges.",
+        title: "Workflow Automation",
+        description: "Robust automations with n8n and custom scripts to connect tools and move data.",
+        icon: Bot,
+    },
+    {
+        title: "Self‑Hosted AI & Local LLMs",
+        description: "Local LLM deployment (vLLM, OpenWebUI) and Dockerized AI services exposed securely.",
         icon: Code2,
+    },
+    {
+        title: "DevOps, CI/CD & Infrastructure",
+        description: "Dockerized apps, Azure DevOps pipelines, and Nginx/Cloudflare routing.",
+        icon: Terminal,
+    },
+    {
+        title: "E2E Testing & QA Automation",
+        description: "Automated CodeceptJS test suites integrated into CI/CD for reliable releases.",
+        icon: LayoutTemplate,
     },
 ]
 
 export function Services() {
     return (
         <section id="services" className="py-20 md:py-32">
-            <div className="container px-4 md:px-6">
+            <div className="w-full max-w-screen-2xl mx-auto px-4 md:px-6">
                 <div className="flex flex-col items-center space-y-4 text-center mb-12">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
