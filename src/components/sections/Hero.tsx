@@ -36,15 +36,6 @@ export function Hero() {
                             Classic
                         </Button>
                         <Button
-                            variant={animationType === "construct" ? "default" : "ghost"}
-                            size="sm"
-                            onClick={() => setAnimationType("construct")}
-                            className="text-xs"
-                        >
-                            <Box className="mr-1 h-3 w-3" />
-                            Construct
-                        </Button>
-                        <Button
                             variant={animationType === "cityflight" ? "default" : "ghost"}
                             size="sm"
                             onClick={() => setAnimationType("cityflight")}
@@ -52,6 +43,15 @@ export function Hero() {
                         >
                             <Network className="mr-1 h-3 w-3" />
                             CityFlight
+                        </Button>
+                        <Button
+                            variant={animationType === "construct" ? "default" : "ghost"}
+                            size="sm"
+                            onClick={() => setAnimationType("construct")}
+                            className="text-xs"
+                        >
+                            <Box className="mr-1 h-3 w-3" />
+                            Construct
                         </Button>
                     </motion.div>
 
