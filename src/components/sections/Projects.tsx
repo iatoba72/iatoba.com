@@ -190,10 +190,7 @@ export function Projects() {
                                     )}
                                 </div>
                                 <CardHeader>
-                                    <div className="flex justify-between items-start">
-                                        <CardTitle className="text-xl">{project.title}</CardTitle>
-                                        <Badge variant="secondary">{project.category}</Badge>
-                                    </div>
+                                    <CardTitle className="text-xl">{project.title}</CardTitle>
                                     <CardDescription className="line-clamp-2">
                                         {project.description}
                                     </CardDescription>
