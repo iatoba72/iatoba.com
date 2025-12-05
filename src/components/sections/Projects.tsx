@@ -190,10 +190,7 @@ export function Projects() {
                                     )}
                                 </div>
                                 <CardHeader>
-                                    <div className="flex justify-between items-start">
-                                        <CardTitle className="text-xl">{project.title}</CardTitle>
-                                        <Badge variant="secondary">{project.category}</Badge>
-                                    </div>
+                                    <CardTitle className="text-xl">{project.title}</CardTitle>
                                     <CardDescription className="line-clamp-2">
                                         {project.description}
                                     </CardDescription>
@@ -207,20 +204,6 @@ export function Projects() {
                                         ))}
                                     </div>
                                 </CardContent>
-                                <CardFooter className="flex gap-2 pt-4">
-                                    <Button variant="outline" size="sm" className="flex-1" asChild>
-                                        <a href={project.links.github} target="_blank" rel="noopener noreferrer">
-                                            <Github className="mr-2 h-4 w-4" />
-                                            Code
-                                        </a>
-                                    </Button>
-                                    <Button size="sm" className="flex-1" asChild>
-                                        <a href={project.links.demo} target="_blank" rel="noopener noreferrer">
-                                            <ExternalLink className="mr-2 h-4 w-4" />
-                                            Demo
-                                        </a>
-                                    </Button>
-                                </CardFooter>
                             </Card>
                         </motion.div>
                     ))}
