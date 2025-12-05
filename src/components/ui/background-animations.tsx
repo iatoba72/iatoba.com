@@ -19,7 +19,7 @@ export function BackgroundAnimations({ type = "classic" }: BackgroundAnimationsP
     const isDark = theme === "dark"
 
     // Get device tilt data for mobile interaction
-    const { tiltX, tiltY, isMobile } = useDeviceTilt()
+    const { tiltX, tiltY, isMobile, hasPermission } = useDeviceTilt()
 
     const [eventSource, setEventSource] = React.useState<HTMLElement | null>(null)
 
@@ -38,9 +38,9 @@ export function BackgroundAnimations({ type = "classic" }: BackgroundAnimationsP
                 <hemisphereLight intensity={0.5} color="#ffffff" groundColor="#000000" />
 
                 <React.Suspense fallback={null}>
-                    {type === "classic" && <ClassicParticles isDark={isDark} tiltX={tiltX} tiltY={tiltY} isMobile={isMobile} />}
-                    {type === "construct" && <ConstructScene isDark={isDark} tiltX={tiltX} tiltY={tiltY} isMobile={isMobile} />}
-                    {type === "cityflight" && <CityFlightScene isDark={isDark} tiltX={tiltX} tiltY={tiltY} isMobile={isMobile} />}
+                    {type === "classic" && <ClassicParticles isDark={isDark} tiltX={tiltX} tiltY={tiltY} isMobile={isMobile} hasPermission={hasPermission} />}
+                    {type === "construct" && <ConstructScene isDark={isDark} tiltX={tiltX} tiltY={tiltY} isMobile={isMobile} hasPermission={hasPermission} />}
+                    {type === "cityflight" && <CityFlightScene isDark={isDark} tiltX={tiltX} tiltY={tiltY} isMobile={isMobile} hasPermission={hasPermission} />}
                 </React.Suspense>
             </Canvas>
         </div>
@@ -58,7 +58,7 @@ function ResetScene() {
     return null
 }
 
-function ClassicParticles({ isDark, tiltX, tiltY, isMobile }: { isDark: boolean, tiltX: number, tiltY: number, isMobile: boolean }) {
+function ClassicParticles({ isDark, tiltX, tiltY, isMobile, hasPermission }: { isDark: boolean, tiltX: number, tiltY: number, isMobile: boolean, hasPermission: boolean }) {
     const ref = React.useRef<THREE.Points>(null!)
 
     // Custom sphere generation to avoid NaN issues from external library
@@ -84,8 +84,8 @@ function ClassicParticles({ isDark, tiltX, tiltY, isMobile }: { isDark: boolean,
 
     useFrame((state, delta) => {
         if (!ref.current) return
-        // Use tilt data if on mobile and tilting, otherwise use mouse pointer
-        const effectiveX = (isMobile && tiltX !== 0) ? tiltX : (state.pointer.x || 0)
+        // Use tilt data if on mobile with permission, otherwise use mouse pointer
+        const effectiveX = (isMobile && hasPermission) ? tiltX : (state.pointer.x || 0)
         const speedMultiplier = 1 + effectiveX * 2
         ref.current.rotation.x -= (delta / 10) * speedMultiplier
         ref.current.rotation.y -= (delta / 15) * speedMultiplier
@@ -107,7 +107,7 @@ function ClassicParticles({ isDark, tiltX, tiltY, isMobile }: { isDark: boolean,
     )
 }
 
-function ConstructScene({ isDark, tiltX, tiltY, isMobile }: { isDark: boolean, tiltX: number, tiltY: number, isMobile: boolean }) {
+function ConstructScene({ isDark, tiltX, tiltY, isMobile, hasPermission }: { isDark: boolean, tiltX: number, tiltY: number, isMobile: boolean, hasPermission: boolean }) {
     const meshRef = React.useRef<THREE.InstancedMesh>(null!)
     const dummy = React.useMemo(() => new THREE.Object3D(), [])
 
@@ -179,9 +179,9 @@ function ConstructScene({ isDark, tiltX, tiltY, isMobile }: { isDark: boolean, t
     useFrame((state) => {
         if (!meshRef.current) return
 
-        // Use tilt data if on mobile and tilting, otherwise use mouse pointer
+        // Use tilt data if on mobile with permission, otherwise use mouse pointer
         // Control: -1 (Left/Tilt Left) = Chaos, 1 (Right/Tilt Right) = Order
-        const effectiveX = (isMobile && tiltX !== 0) ? tiltX : (state.pointer.x || 0)
+        const effectiveX = (isMobile && hasPermission) ? tiltX : (state.pointer.x || 0)
         // Map effectiveX (-1 to 1) to progress (0 to 1)
         const targetProgress = THREE.MathUtils.clamp((effectiveX + 1) / 2, 0, 1)
 
@@ -277,7 +277,7 @@ function ConstructScene({ isDark, tiltX, tiltY, isMobile }: { isDark: boolean, t
     )
 }
 
-function CityFlightScene({ isDark, tiltX, tiltY, isMobile }: { isDark: boolean, tiltX: number, tiltY: number, isMobile: boolean }) {
+function CityFlightScene({ isDark, tiltX, tiltY, isMobile, hasPermission }: { isDark: boolean, tiltX: number, tiltY: number, isMobile: boolean, hasPermission: boolean }) {
     const spheresRef = React.useRef<THREE.InstancedMesh>(null!)
     const sticksRef = React.useRef<THREE.InstancedMesh>(null!)
     const groupRef = React.useRef<THREE.Group>(null!)
@@ -390,8 +390,8 @@ function CityFlightScene({ isDark, tiltX, tiltY, isMobile }: { isDark: boolean, 
         state.camera.position.z = cameraZ.current
         state.camera.position.y = 40 // Higher camera
 
-        // Use tilt data if on mobile and tilting, otherwise use mouse pointer
-        const inputX = (isMobile && tiltX !== 0) ? tiltX : state.pointer.x
+        // Use tilt data if on mobile with permission, otherwise use mouse pointer
+        const inputX = (isMobile && hasPermission) ? tiltX : state.pointer.x
         cameraX.current += inputX * lateralSpeed * delta
 
         state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, cameraX.current, 0.1)
