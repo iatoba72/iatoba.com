@@ -32,7 +32,14 @@ export function useDeviceTilt(): DeviceTiltData {
   const smoothedTiltY = useRef(0)
 
   // Device detection
-  const isIOS = typeof window !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent)
+  // Enhanced iPad detection for iPadOS 13+ which reports as "Macintosh"
+  const isIOS = typeof window !== 'undefined' && (() => {
+    const ua = navigator.userAgent
+    const isIPad = /iPad/.test(ua) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+    const isIPhone = /iPhone|iPod/.test(ua)
+    return isIPad || isIPhone
+  })()
   const isAndroid = typeof window !== 'undefined' && /Android/.test(navigator.userAgent)
   const isMobile = isIOS || isAndroid
 
