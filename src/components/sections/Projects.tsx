@@ -144,6 +144,41 @@ export function Projects() {
                                             fill
                                             className="object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
+                                    ) : project.id === 2 ? (
+                                        <Image
+                                            src="/portfolio-3d-landing.png"
+                                            alt={project.title}
+                                            fill
+                                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                    ) : project.id === 3 ? (
+                                        <Image
+                                            src="/3d-product-configurator.jpg"
+                                            alt={project.title}
+                                            fill
+                                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                    ) : project.id === 4 ? (
+                                        <Image
+                                            src="/e2e-testing-framework.jpg"
+                                            alt={project.title}
+                                            fill
+                                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                    ) : project.id === 5 ? (
+                                        <Image
+                                            src="/secure-hybrid-cloud-gateway.jpg"
+                                            alt={project.title}
+                                            fill
+                                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                    ) : project.id === 6 ? (
+                                        <Image
+                                            src="/homelab-monitoring-dashboard.jpg"
+                                            alt={project.title}
+                                            fill
+                                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
                                     ) : (
                                         <>
                                             <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 group-hover:scale-105 transition-transform duration-500" />
