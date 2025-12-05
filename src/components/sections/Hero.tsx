@@ -6,15 +6,28 @@ import { ArrowRight, Sparkles, Box, Network } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { BackgroundAnimations } from "@/components/ui/background-animations"
+import { TiltPermissionButton } from "@/components/ui/TiltPermissionButton"
+import { useDeviceTilt } from "@/hooks/useDeviceTilt"
 
 type AnimationType = "classic" | "construct" | "cityflight"
 
 export function Hero() {
     const [animationType, setAnimationType] = React.useState<AnimationType>("classic")
 
+    // Get device tilt data for permission button
+    const { needsPermission, requestPermission, isIOS } = useDeviceTilt()
+
     return (
         <section className="relative flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden py-20 md:py-32">
             <BackgroundAnimations type={animationType} />
+
+            {/* Show permission button only on iOS when permission is needed */}
+            {isIOS && needsPermission && (
+                <TiltPermissionButton
+                    isVisible={true}
+                    onRequestPermission={requestPermission}
+                />
+            )}
 
             <div className="container px-4 md:px-6 relative z-10 pointer-events-none">
                 <div className="flex flex-col items-center text-center space-y-8 pointer-events-auto">
