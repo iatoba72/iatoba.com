@@ -7,7 +7,6 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { BackgroundAnimations } from "@/components/ui/background-animations"
 import { TiltPermissionButton } from "@/components/ui/TiltPermissionButton"
-import { TiltDebugPanel } from "@/components/ui/TiltDebugPanel"
 import { useDeviceTilt } from "@/hooks/useDeviceTilt"
 
 type AnimationType = "classic" | "construct" | "cityflight"
@@ -30,9 +29,6 @@ export function Hero() {
                     onRequestPermission={requestPermission}
                 />
             )}
-
-            {/* Show debug panel on mobile */}
-            {isMobile && <TiltDebugPanel tiltData={tiltData} />}
 
             <div className="container px-4 md:px-6 relative z-10 pointer-events-none">
                 <div className="flex flex-col items-center text-center space-y-8 pointer-events-auto">
