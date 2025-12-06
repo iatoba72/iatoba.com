@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 
 export interface DeviceTiltData {
+  // Core tilt data
   tiltX: number
   tiltY: number
   isIOS: boolean
@@ -9,6 +10,15 @@ export interface DeviceTiltData {
   needsPermission: boolean
   hasPermission: boolean
   requestPermission: () => Promise<void>
+
+  // Diagnostic data for debugging
+  permissionStatus: 'not_requested' | 'requesting' | 'granted' | 'denied' | 'error'
+  listenerAttached: boolean
+  eventCount: number
+  lastEventTime: number | null
+  rawBeta: number | null
+  rawGamma: number | null
+  apiAvailable: boolean
 }
 
 // Clamp utility function
@@ -27,9 +37,21 @@ export function useDeviceTilt(): DeviceTiltData {
   const [hasPermission, setHasPermission] = useState(false)
   const [needsPermission, setNeedsPermission] = useState(false)
 
+  // Diagnostic states
+  const [permissionStatus, setPermissionStatus] = useState<'not_requested' | 'requesting' | 'granted' | 'denied' | 'error'>('not_requested')
+  const [listenerAttached, setListenerAttached] = useState(false)
+  const [eventCount, setEventCount] = useState(0)
+  const [lastEventTime, setLastEventTime] = useState<number | null>(null)
+  const [rawBeta, setRawBeta] = useState<number | null>(null)
+  const [rawGamma, setRawGamma] = useState<number | null>(null)
+
   // Smoothed tilt values
   const smoothedTiltX = useRef(0)
   const smoothedTiltY = useRef(0)
+
+  // Event counter for tracking
+  const eventCountRef = useRef(0)
+  const eventCountIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
   // Device detection
   // Enhanced iPad detection for iPadOS 13+ which reports as "Macintosh"
@@ -42,6 +64,9 @@ export function useDeviceTilt(): DeviceTiltData {
   })()
   const isAndroid = typeof window !== 'undefined' && /Android/.test(navigator.userAgent)
   const isMobile = isIOS || isAndroid
+
+  // Check if API is available
+  const apiAvailable = typeof window !== 'undefined' && typeof DeviceOrientationEvent !== 'undefined'
 
   // Check if iOS requires permission
   useEffect(() => {
@@ -56,6 +81,7 @@ export function useDeviceTilt(): DeviceTiltData {
     } else if (isMobile) {
       // Android or older iOS - can start listening immediately
       setHasPermission(true)
+      setPermissionStatus('granted')
     }
   }, [isMobile])
 
@@ -65,18 +91,22 @@ export function useDeviceTilt(): DeviceTiltData {
 
     try {
       if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
+        setPermissionStatus('requesting')
         console.log('[DeviceTilt] Requesting iOS device orientation permission...')
+
         const permission = await (DeviceOrientationEvent as any).requestPermission()
         console.log('[DeviceTilt] Permission response:', permission)
 
         if (permission === 'granted') {
           setHasPermission(true)
           setNeedsPermission(false)
+          setPermissionStatus('granted')
           console.log('[DeviceTilt] ✓ Permission granted')
           console.log('[DeviceTilt] Note: If tilt still does not work, disable "Prevent Cross-Site Tracking" in Settings > Safari')
         } else {
           setHasPermission(false)
           setNeedsPermission(false)
+          setPermissionStatus('denied')
           console.warn('[DeviceTilt] Permission denied by user')
         }
       }
@@ -88,18 +118,28 @@ export function useDeviceTilt(): DeviceTiltData {
       console.error('[DeviceTilt] - Cross-Site Tracking Prevention is enabled')
       setHasPermission(false)
       setNeedsPermission(false)
+      setPermissionStatus('error')
     }
   }, [])
 
   // Handle device orientation
   useEffect(() => {
-    if (typeof window === 'undefined' || !hasPermission) return
+    if (typeof window === 'undefined' || !hasPermission) {
+      setListenerAttached(false)
+      return
+    }
 
     const handleOrientation = (event: DeviceOrientationEvent) => {
       // Get orientation values - check for null/undefined
       // iOS Safari may return null if sensors are blocked
       const beta = event.beta ?? 0   // Front-to-back tilt (-180 to 180)
       const gamma = event.gamma ?? 0 // Left-to-right tilt (-90 to 90)
+
+      // Update diagnostic data
+      setRawBeta(event.beta)
+      setRawGamma(event.gamma)
+      setLastEventTime(Date.now())
+      eventCountRef.current += 1
 
       // Debug: Log values on iOS to help troubleshoot
       if (isIOS && (smoothedTiltX.current === 0 && smoothedTiltY.current === 0)) {
@@ -124,6 +164,12 @@ export function useDeviceTilt(): DeviceTiltData {
 
     // Remove capture phase flag - not needed for deviceorientation
     window.addEventListener('deviceorientation', handleOrientation, false)
+    setListenerAttached(true)
+
+    // Set up interval to update event count every 100ms
+    eventCountIntervalRef.current = setInterval(() => {
+      setEventCount(eventCountRef.current)
+    }, 100)
 
     // Log when listener is attached (helps debugging)
     if (isIOS) {
@@ -133,6 +179,11 @@ export function useDeviceTilt(): DeviceTiltData {
 
     return () => {
       window.removeEventListener('deviceorientation', handleOrientation, false)
+      setListenerAttached(false)
+      if (eventCountIntervalRef.current) {
+        clearInterval(eventCountIntervalRef.current)
+        eventCountIntervalRef.current = null
+      }
     }
   }, [hasPermission, isIOS])
 
@@ -145,5 +196,12 @@ export function useDeviceTilt(): DeviceTiltData {
     needsPermission,
     hasPermission,
     requestPermission,
+    permissionStatus,
+    listenerAttached,
+    eventCount,
+    lastEventTime,
+    rawBeta,
+    rawGamma,
+    apiAvailable,
   }
 }
