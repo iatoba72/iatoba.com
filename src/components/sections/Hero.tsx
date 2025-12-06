@@ -21,7 +21,7 @@ export function Hero() {
 
     return (
         <section className="relative flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden py-20 md:py-32">
-            <BackgroundAnimations type={animationType} />
+            <BackgroundAnimations type={animationType} tiltData={tiltData} />
 
             {/* Show permission button only on iOS when permission is needed */}
             {isIOS && needsPermission && (

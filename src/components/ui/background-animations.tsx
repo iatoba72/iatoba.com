@@ -6,20 +6,21 @@ import { Points, PointMaterial, Line, Float as FloatDrei, Environment, Lightform
 
 import * as THREE from "three"
 import { useTheme } from "next-themes"
-import { useDeviceTilt } from "@/hooks/useDeviceTilt"
+import type { DeviceTiltData } from "@/hooks/useDeviceTilt"
 
 type AnimationType = "classic" | "construct" | "cityflight"
 
 interface BackgroundAnimationsProps {
     type?: AnimationType
+    tiltData: DeviceTiltData
 }
 
-export function BackgroundAnimations({ type = "classic" }: BackgroundAnimationsProps) {
+export function BackgroundAnimations({ type = "classic", tiltData }: BackgroundAnimationsProps) {
     const { theme } = useTheme()
     const isDark = theme === "dark"
 
-    // Get device tilt data for mobile interaction
-    const { tiltX, tiltY, isMobile, hasPermission } = useDeviceTilt()
+    // Use tilt data passed from parent (Hero component)
+    const { tiltX, tiltY, isMobile, hasPermission } = tiltData
 
     const [eventSource, setEventSource] = React.useState<HTMLElement | null>(null)
 
@@ -86,19 +87,9 @@ function ClassicParticles({ isDark, tiltX, tiltY, isMobile, hasPermission }: { i
         if (!ref.current) return
         // Use tilt data if on mobile with permission, otherwise use mouse pointer
         const effectiveX = (isMobile && hasPermission) ? tiltX : (state.pointer.x || 0)
-        const effectiveY = (isMobile && hasPermission) ? tiltY : (state.pointer.y || 0)
-
-        // Base rotation (continuous spin)
-        ref.current.rotation.x -= delta / 10
-        ref.current.rotation.y -= delta / 15
-
-        // Add tilt-based rotation offset (amplified for visibility)
-        if (isMobile && hasPermission) {
-            ref.current.rotation.x += effectiveY * 0.5
-            ref.current.rotation.y += effectiveX * 0.5
-        } else {
-            ref.current.rotation.y += effectiveX * 0.3
-        }
+        const speedMultiplier = 1 + effectiveX * 2
+        ref.current.rotation.x -= (delta / 10) * speedMultiplier
+        ref.current.rotation.y -= (delta / 15) * speedMultiplier
     })
 
     return (
@@ -191,9 +182,7 @@ function ConstructScene({ isDark, tiltX, tiltY, isMobile, hasPermission }: { isD
 
         // Use tilt data if on mobile with permission, otherwise use mouse pointer
         // Control: -1 (Left/Tilt Left) = Chaos, 1 (Right/Tilt Right) = Order
-        // Amplify tilt for mobile (20x) to make it more responsive
-        const inputX = (isMobile && hasPermission) ? tiltX * 20 : (state.pointer.x || 0)
-        const effectiveX = THREE.MathUtils.clamp(inputX, -1, 1)
+        const effectiveX = (isMobile && hasPermission) ? tiltX : (state.pointer.x || 0)
         // Map effectiveX (-1 to 1) to progress (0 to 1)
         const targetProgress = THREE.MathUtils.clamp((effectiveX + 1) / 2, 0, 1)
 
@@ -403,8 +392,7 @@ function CityFlightScene({ isDark, tiltX, tiltY, isMobile, hasPermission }: { is
         state.camera.position.y = 40 // Higher camera
 
         // Use tilt data if on mobile with permission, otherwise use mouse pointer
-        // Amplify tilt for mobile (20x) to make it more responsive
-        const inputX = (isMobile && hasPermission) ? tiltX * 20 : state.pointer.x
+        const inputX = (isMobile && hasPermission) ? tiltX : state.pointer.x
         cameraX.current += inputX * lateralSpeed * delta
 
         state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, cameraX.current, 0.1)
