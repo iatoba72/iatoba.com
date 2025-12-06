@@ -65,17 +65,27 @@ export function useDeviceTilt(): DeviceTiltData {
 
     try {
       if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
+        console.log('[DeviceTilt] Requesting iOS device orientation permission...')
         const permission = await (DeviceOrientationEvent as any).requestPermission()
+        console.log('[DeviceTilt] Permission response:', permission)
+
         if (permission === 'granted') {
           setHasPermission(true)
           setNeedsPermission(false)
+          console.log('[DeviceTilt] ✓ Permission granted')
+          console.log('[DeviceTilt] Note: If tilt still does not work, disable "Prevent Cross-Site Tracking" in Settings > Safari')
         } else {
           setHasPermission(false)
           setNeedsPermission(false)
+          console.warn('[DeviceTilt] Permission denied by user')
         }
       }
     } catch (error) {
-      console.error('Error requesting device orientation permission:', error)
+      console.error('[DeviceTilt] Error requesting device orientation permission:', error)
+      console.error('[DeviceTilt] Common causes:')
+      console.error('[DeviceTilt] - Not called from user gesture (button click)')
+      console.error('[DeviceTilt] - Site not served over HTTPS')
+      console.error('[DeviceTilt] - Cross-Site Tracking Prevention is enabled')
       setHasPermission(false)
       setNeedsPermission(false)
     }
@@ -86,16 +96,25 @@ export function useDeviceTilt(): DeviceTiltData {
     if (typeof window === 'undefined' || !hasPermission) return
 
     const handleOrientation = (event: DeviceOrientationEvent) => {
-      // Get orientation values
+      // Get orientation values - check for null/undefined
+      // iOS Safari may return null if sensors are blocked
       const beta = event.beta ?? 0   // Front-to-back tilt (-180 to 180)
       const gamma = event.gamma ?? 0 // Left-to-right tilt (-90 to 90)
+
+      // Debug: Log values on iOS to help troubleshoot
+      if (isIOS && (smoothedTiltX.current === 0 && smoothedTiltY.current === 0)) {
+        // Only log once when first non-zero values are received
+        if (beta !== 0 || gamma !== 0) {
+          console.log('[DeviceTilt] iOS orientation values received:', { beta, gamma })
+        }
+      }
 
       // Normalize to -1 to 1 range
       // Divide by 45 degrees to get a good range of motion
       const rawTiltX = clamp(gamma / 45, -1, 1)
       const rawTiltY = clamp(beta / 45, -1, 1)
 
-      // Apply smoothing to reduce jitter (lerp factor of 0.1 = very smooth)
+      // Apply smoothing to reduce jitter (lerp factor of 0.15 = smooth)
       smoothedTiltX.current = lerp(smoothedTiltX.current, rawTiltX, 0.15)
       smoothedTiltY.current = lerp(smoothedTiltY.current, rawTiltY, 0.15)
 
@@ -103,12 +122,19 @@ export function useDeviceTilt(): DeviceTiltData {
       setTiltY(smoothedTiltY.current)
     }
 
-    window.addEventListener('deviceorientation', handleOrientation, true)
+    // Remove capture phase flag - not needed for deviceorientation
+    window.addEventListener('deviceorientation', handleOrientation, false)
+
+    // Log when listener is attached (helps debugging)
+    if (isIOS) {
+      console.log('[DeviceTilt] iOS orientation listener attached')
+      console.log('[DeviceTilt] If tilt is not working, check Settings > Safari > Prevent Cross-Site Tracking (should be OFF)')
+    }
 
     return () => {
-      window.removeEventListener('deviceorientation', handleOrientation, true)
+      window.removeEventListener('deviceorientation', handleOrientation, false)
     }
-  }, [hasPermission])
+  }, [hasPermission, isIOS])
 
   return {
     tiltX,
