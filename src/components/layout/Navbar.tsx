@@ -44,13 +44,20 @@ export function Navbar() {
                 </div>
                 <nav className="hidden md:flex items-center gap-6">
                     {navigation.map((item) => (
-                        <Link
+                        <a
                             key={item.name}
                             href={item.href}
-                            className="text-sm font-medium transition-colors hover:text-primary"
+                            className="text-sm font-medium transition-colors hover:text-primary cursor-pointer"
+                            onClick={(e) => {
+                                e.preventDefault()
+                                const element = document.querySelector(item.href)
+                                if (element) {
+                                    element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                                }
+                            }}
                         >
                             {item.name}
-                        </Link>
+                        </a>
                     ))}
                     <div className="flex items-center gap-2">
                         <LanguageToggle />
