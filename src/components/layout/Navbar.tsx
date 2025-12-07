@@ -16,6 +16,7 @@ const navigation = [
 
 export function Navbar() {
     const [isScrolled, setIsScrolled] = React.useState(false)
+    const [isMenuOpen, setIsMenuOpen] = React.useState(false)
 
     React.useEffect(() => {
         const handleScroll = () => {
@@ -52,7 +53,7 @@ export function Navbar() {
                 </nav>
                 <div className="flex items-center gap-2 md:hidden">
                     <ModeToggle />
-                    <Sheet>
+                    <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                         <SheetTrigger asChild>
                             <Button variant="ghost" size="icon" className="md:hidden" suppressHydrationWarning>
                                 <Menu className="h-5 w-5" />
@@ -66,6 +67,7 @@ export function Navbar() {
                                         key={item.name}
                                         href={item.href}
                                         className="text-lg font-medium transition-colors hover:text-primary"
+                                        onClick={() => setIsMenuOpen(false)}
                                     >
                                         {item.name}
                                     </Link>
