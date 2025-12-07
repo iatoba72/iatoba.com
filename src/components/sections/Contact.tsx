@@ -191,7 +191,12 @@ export function Contact() {
                                     </div>
                                     <div>
                                         <p className="font-medium">Email</p>
-                                        <p className="text-muted-foreground">iatoba@gmail.com</p>
+                                        <a
+                                            href="mailto:iatoba@gmail.com"
+                                            className="text-muted-foreground hover:underline"
+                                        >
+                                            iatoba@gmail.com
+                                        </a>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-4">
@@ -200,7 +205,14 @@ export function Contact() {
                                     </div>
                                     <div>
                                         <p className="font-medium">Phone</p>
-                                        <p className="text-muted-foreground">+54 9 11 5322 6235</p>
+                                        <a
+                                            href="https://wa.me/5491153226235"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-muted-foreground hover:underline"
+                                        >
+                                            +54 9 11 5322 6235
+                                        </a>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-4">
