@@ -60,17 +60,24 @@ export function Navbar() {
                                 <span className="sr-only">Toggle menu</span>
                             </Button>
                         </SheetTrigger>
-                        <SheetContent side="right">
-                            <nav className="flex flex-col gap-4 mt-8">
+                        <SheetContent side="right" className="w-[40%] sm:max-w-[250px]">
+                            <nav className="flex flex-col gap-6 mt-8 px-2">
                                 {navigation.map((item) => (
-                                    <Link
+                                    <a
                                         key={item.name}
                                         href={item.href}
-                                        className="text-lg font-medium transition-colors hover:text-primary"
-                                        onClick={() => setIsMenuOpen(false)}
+                                        className="text-2xl font-medium transition-colors hover:text-primary block px-4 py-2"
+                                        onClick={(e) => {
+                                            e.preventDefault()
+                                            const element = document.querySelector(item.href)
+                                            if (element) {
+                                                element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                                            }
+                                            setIsMenuOpen(false)
+                                        }}
                                     >
                                         {item.name}
-                                    </Link>
+                                    </a>
                                 ))}
                             </nav>
                         </SheetContent>
