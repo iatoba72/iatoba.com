@@ -16,7 +16,7 @@
     "viewProjects": "Ver Proyectos",
     "contactMe": "Contáctame",
     "classic": "Clásico",
-    "cityflight": "Vuelo Ciudad",
+    "cityflight": "Ciudad",
     "construct": "Construir"
   },
   "projects": {
@@ -98,7 +98,7 @@
   },
   "about": {
     "title": "Sobre Mí",
-    "subtitle": "Un Desarrollador Full-Stack especializado en tecnologías web modernas, integraciones de IA y automatización",
+    "subtitle": "Desarrollador Full-Stack especializado en tecnologías web modernas, integraciones de IA y automatización",
     "intro": "Construyo aplicaciones web de alto rendimiento, soluciones de IA auto-hospedadas y sistemas de automatización que resuelven problemas reales. Con experiencia que abarca React/Next.js, Three.js, Docker y despliegue de LLM local, conecto la tecnología de vanguardia con la implementación práctica.",
     "cta": "Construyamos Algo",
     "expertise": {
