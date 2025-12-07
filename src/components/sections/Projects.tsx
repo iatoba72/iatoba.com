@@ -21,6 +21,7 @@ const projects = [
         id: 1,
         title: "Self‑Hosted AI Lab & Automation Hub",
         description: "A self-hosted AI lab to run multiple LLMs and AI tools locally, orchestrated with Docker and n8n.",
+        altText: "Self-hosted AI lab dashboard showing Docker containers running vLLM and OpenWebUI with n8n automation workflows",
         tags: ["Docker", "vLLM", "OpenWebUI", "n8n"],
         links: {
             demo: "#",
@@ -32,6 +33,7 @@ const projects = [
         id: 2,
         title: "Full‑Stack Portfolio & 3D Landing",
         description: "A personal portfolio site showcasing modern stack capabilities with interactive 3D elements.",
+        altText: "Modern portfolio website with interactive 3D elements built using Next.js, Three.js, and React",
         tags: ["Next.js", "Three.js", "Docker", "Nginx"],
         links: {
             demo: "#",
@@ -43,6 +45,7 @@ const projects = [
         id: 3,
         title: "Interactive 3D Product Configurator",
         description: "A real-time 3D configurator allowing users to customize products with instant visual feedback.",
+        altText: "Interactive 3D product configurator built with Three.js and React Three Fiber showing real-time product customization",
         tags: ["Three.js", "React Three Fiber", "WebGL", "Zustand"],
         links: {
             demo: "#",
@@ -54,6 +57,7 @@ const projects = [
         id: 4,
         title: "E2E Testing Framework",
         description: "A CodeceptJS-based end-to-end testing framework integrated into CI/CD pipelines.",
+        altText: "End-to-end testing framework dashboard showing CodeceptJS tests integrated with Azure DevOps CI/CD pipeline",
         tags: ["CodeceptJS", "CI/CD", "Azure DevOps", "QA"],
         links: {
             demo: "#",
@@ -65,6 +69,7 @@ const projects = [
         id: 5,
         title: "Secure Hybrid Cloud Gateway",
         description: "A secure access gateway bridging on-premise legacy systems with modern cloud applications using zero-trust principles.",
+        altText: "Secure hybrid cloud gateway architecture diagram showing Docker, Nginx, OAuth2, and WireGuard integration",
         tags: ["Docker", "Nginx", "OAuth2", "WireGuard"],
         links: {
             demo: "#",
@@ -76,6 +81,7 @@ const projects = [
         id: 6,
         title: "Homelab Monitoring Dashboard",
         description: "A centralized dashboard to monitor health and metrics of self-hosted AI and automation services.",
+        altText: "Grafana homelab monitoring dashboard displaying Prometheus metrics for self-hosted AI and Docker services",
         tags: ["Grafana", "Prometheus", "Docker", "React"],
         links: {
             demo: "#",
@@ -140,42 +146,42 @@ export function Projects() {
                                     {project.id === 1 ? (
                                         <Image
                                             src="/ai-workflow-automation.jpg"
-                                            alt={project.title}
+                                            alt={project.altText}
                                             fill
                                             className="object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                     ) : project.id === 2 ? (
                                         <Image
                                             src="/portfolio-3d-landing.png"
-                                            alt={project.title}
+                                            alt={project.altText}
                                             fill
                                             className="object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                     ) : project.id === 3 ? (
                                         <Image
                                             src="/3d-product-configurator.jpg"
-                                            alt={project.title}
+                                            alt={project.altText}
                                             fill
                                             className="object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                     ) : project.id === 4 ? (
                                         <Image
                                             src="/e2e-testing-framework.jpg"
-                                            alt={project.title}
+                                            alt={project.altText}
                                             fill
                                             className="object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                     ) : project.id === 5 ? (
                                         <Image
                                             src="/secure-hybrid-cloud-gateway.jpg"
-                                            alt={project.title}
+                                            alt={project.altText}
                                             fill
                                             className="object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                     ) : project.id === 6 ? (
                                         <Image
                                             src="/homelab-monitoring-dashboard.jpg"
-                                            alt={project.title}
+                                            alt={project.altText}
                                             fill
                                             className="object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
