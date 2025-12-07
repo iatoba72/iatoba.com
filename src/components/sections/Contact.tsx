@@ -185,56 +185,66 @@ export function Contact() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
-                                <div className="flex items-center gap-4">
+                                <a
+                                    href="mailto:iatoba@gmail.com"
+                                    className="flex items-center gap-4 transition-colors hover:opacity-80 cursor-pointer"
+                                >
                                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
                                         <Mail className="h-5 w-5" />
                                     </div>
                                     <div>
                                         <p className="font-medium">Email</p>
-                                        <a
-                                            href="mailto:iatoba@gmail.com"
-                                            className="text-muted-foreground hover:underline"
-                                        >
+                                        <p className="text-muted-foreground hover:underline">
                                             iatoba@gmail.com
-                                        </a>
+                                        </p>
                                     </div>
-                                </div>
-                                <div className="flex items-center gap-4">
+                                </a>
+                                <a
+                                    href="https://wa.me/5491153226235"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-4 transition-colors hover:opacity-80 cursor-pointer"
+                                >
                                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
                                         <Phone className="h-5 w-5" />
                                     </div>
                                     <div>
                                         <p className="font-medium">Phone</p>
-                                        <a
-                                            href="https://wa.me/5491153226235"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-muted-foreground hover:underline"
-                                        >
+                                        <p className="text-muted-foreground hover:underline">
                                             +54 9 11 5322 6235
-                                        </a>
+                                        </p>
                                     </div>
-                                </div>
-                                <div className="flex items-center gap-4">
+                                </a>
+                                <a
+                                    href="https://www.google.com/maps/search/?api=1&query=Buenos+Aires,+Argentina"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-4 transition-colors hover:opacity-80 cursor-pointer"
+                                >
                                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
                                         <MapPin className="h-5 w-5" />
                                     </div>
                                     <div>
                                         <p className="font-medium">Location</p>
-                                        <p className="text-muted-foreground">Buenos Aires, Argentina</p>
+                                        <p className="text-muted-foreground hover:underline">Buenos Aires, Argentina</p>
                                     </div>
-                                </div>
-                                <div className="flex items-center gap-4">
+                                </a>
+                                <a
+                                    href="https://www.linkedin.com/in/iatoba/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-4 transition-colors hover:opacity-80 cursor-pointer"
+                                >
                                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
                                         <Linkedin className="h-5 w-5" />
                                     </div>
                                     <div>
                                         <p className="font-medium">LinkedIn</p>
-                                        <a href="https://www.linkedin.com/in/iatoba/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:underline">
+                                        <p className="text-muted-foreground hover:underline">
                                             linkedin.com/in/iatoba
-                                        </a>
+                                        </p>
                                     </div>
-                                </div>
+                                </a>
                             </CardContent>
                         </Card>
                     </motion.div>
