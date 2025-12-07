@@ -95,7 +95,7 @@ export function Projects() {
     )
 
     return (
-        <section id="projects" className="py-20 md:py-32 bg-muted/30">
+        <section id="projects" className="py-10 md:py-16 bg-muted/30">
             <div className="w-full max-w-screen-2xl mx-auto px-4 md:px-6">
                 <div className="flex flex-col items-center space-y-4 text-center mb-12">
                     <motion.div
