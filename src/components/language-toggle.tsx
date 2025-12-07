@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Languages } from "lucide-react"
+import { Globe } from "lucide-react"
 import { useLocale } from "next-intl"
 import { usePathname, useRouter } from "next/navigation"
 
@@ -33,7 +33,7 @@ export function LanguageToggle() {
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon" suppressHydrationWarning>
-                    <Languages className="h-[1.2rem] w-[1.2rem]" />
+                    <Globe className="h-[1.2rem] w-[1.2rem]" />
                     <span className="sr-only">Toggle language</span>
                 </Button>
             </DropdownMenuTrigger>
