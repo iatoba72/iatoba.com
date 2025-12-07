@@ -3,20 +3,23 @@
 import * as React from "react"
 import Link from "next/link"
 import { Menu } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { ModeToggle } from "@/components/mode-toggle"
+import { LanguageToggle } from "@/components/language-toggle"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
-const navigation = [
-    { name: "Projects", href: "#projects" },
-    { name: "Services", href: "#services" },
-    { name: "About", href: "#about" },
-    { name: "Contact", href: "#contact" },
-]
-
 export function Navbar() {
+    const t = useTranslations('navbar')
     const [isScrolled, setIsScrolled] = React.useState(false)
     const [isMenuOpen, setIsMenuOpen] = React.useState(false)
+
+    const navigation = [
+        { name: t('projects'), href: "#projects" },
+        { name: t('services'), href: "#services" },
+        { name: t('about'), href: "#about" },
+        { name: t('contact'), href: "#contact" },
+    ]
 
     React.useEffect(() => {
         const handleScroll = () => {
@@ -49,15 +52,19 @@ export function Navbar() {
                             {item.name}
                         </Link>
                     ))}
-                    <ModeToggle />
+                    <div className="flex items-center gap-2">
+                        <LanguageToggle />
+                        <ModeToggle />
+                    </div>
                 </nav>
                 <div className="flex items-center gap-2 md:hidden">
+                    <LanguageToggle />
                     <ModeToggle />
                     <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                         <SheetTrigger asChild>
                             <Button variant="ghost" size="icon" className="md:hidden" suppressHydrationWarning>
                                 <Menu className="h-5 w-5" />
-                                <span className="sr-only">Toggle menu</span>
+                                <span className="sr-only">{t('toggleMenu')}</span>
                             </Button>
                         </SheetTrigger>
                         <SheetContent side="right" className="w-[40%] sm:max-w-[250px]">

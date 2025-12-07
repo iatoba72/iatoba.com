@@ -4,6 +4,7 @@ import * as React from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
 import { ExternalLink, Github } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -15,86 +16,95 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 
-// Mock data for projects
-const projects = [
-    {
-        id: 1,
-        title: "Self‑Hosted AI Lab & Automation Hub",
-        description: "A self-hosted AI lab to run multiple LLMs and AI tools locally, orchestrated with Docker and n8n.",
-        altText: "Self-hosted AI lab dashboard showing Docker containers running vLLM and OpenWebUI with n8n automation workflows",
-        tags: ["Docker", "vLLM", "OpenWebUI", "n8n"],
-        links: {
-            demo: "#",
-            github: "#",
-        },
-        category: "AI & DevOps",
-    },
-    {
-        id: 2,
-        title: "Full‑Stack Portfolio & 3D Landing",
-        description: "A personal portfolio site showcasing modern stack capabilities with interactive 3D elements.",
-        altText: "Modern portfolio website with interactive 3D elements built using Next.js, Three.js, and React",
-        tags: ["Next.js", "Three.js", "Docker", "Nginx"],
-        links: {
-            demo: "#",
-            github: "#",
-        },
-        category: "Web & 3D",
-    },
-    {
-        id: 3,
-        title: "Interactive 3D Product Configurator",
-        description: "A real-time 3D configurator allowing users to customize products with instant visual feedback.",
-        altText: "Interactive 3D product configurator built with Three.js and React Three Fiber showing real-time product customization",
-        tags: ["Three.js", "React Three Fiber", "WebGL", "Zustand"],
-        links: {
-            demo: "#",
-            github: "#",
-        },
-        category: "Web & 3D",
-    },
-    {
-        id: 4,
-        title: "E2E Testing Framework",
-        description: "A CodeceptJS-based end-to-end testing framework integrated into CI/CD pipelines.",
-        altText: "End-to-end testing framework dashboard showing CodeceptJS tests integrated with Azure DevOps CI/CD pipeline",
-        tags: ["CodeceptJS", "CI/CD", "Azure DevOps", "QA"],
-        links: {
-            demo: "#",
-            github: "#",
-        },
-        category: "QA & Testing",
-    },
-    {
-        id: 5,
-        title: "Secure Hybrid Cloud Gateway",
-        description: "A secure access gateway bridging on-premise legacy systems with modern cloud applications using zero-trust principles.",
-        altText: "Secure hybrid cloud gateway architecture diagram showing Docker, Nginx, OAuth2, and WireGuard integration",
-        tags: ["Docker", "Nginx", "OAuth2", "WireGuard"],
-        links: {
-            demo: "#",
-            github: "#",
-        },
-        category: "DevOps & IoT",
-    },
-    {
-        id: 6,
-        title: "Homelab Monitoring Dashboard",
-        description: "A centralized dashboard to monitor health and metrics of self-hosted AI and automation services.",
-        altText: "Grafana homelab monitoring dashboard displaying Prometheus metrics for self-hosted AI and Docker services",
-        tags: ["Grafana", "Prometheus", "Docker", "React"],
-        links: {
-            demo: "#",
-            github: "#",
-        },
-        category: "DevOps & IoT",
-    },
-]
-
-const categories = ["All", "AI & DevOps", "Web & 3D", "Automation", "QA & Testing", "Web & DevOps", "DevOps & IoT"]
-
 export function Projects() {
+    const t = useTranslations('projects')
     const [activeCategory, setActiveCategory] = React.useState("All")
+
+    // Projects data with translation keys
+    const projects = [
+        {
+            id: 1,
+            titleKey: "items.aiLab.title",
+            descriptionKey: "items.aiLab.description",
+            altTextKey: "items.aiLab.altText",
+            tags: ["Docker", "vLLM", "OpenWebUI", "n8n"],
+            links: {
+                demo: "#",
+                github: "#",
+            },
+            category: "AI & DevOps",
+        },
+        {
+            id: 2,
+            titleKey: "items.portfolio.title",
+            descriptionKey: "items.portfolio.description",
+            altTextKey: "items.portfolio.altText",
+            tags: ["Next.js", "Three.js", "Docker", "Nginx"],
+            links: {
+                demo: "#",
+                github: "#",
+            },
+            category: "Web & 3D",
+        },
+        {
+            id: 3,
+            titleKey: "items.configurator.title",
+            descriptionKey: "items.configurator.description",
+            altTextKey: "items.configurator.altText",
+            tags: ["Three.js", "React Three Fiber", "WebGL", "Zustand"],
+            links: {
+                demo: "#",
+                github: "#",
+            },
+            category: "Web & 3D",
+        },
+        {
+            id: 4,
+            titleKey: "items.testing.title",
+            descriptionKey: "items.testing.description",
+            altTextKey: "items.testing.altText",
+            tags: ["CodeceptJS", "CI/CD", "Azure DevOps", "QA"],
+            links: {
+                demo: "#",
+                github: "#",
+            },
+            category: "QA & Testing",
+        },
+        {
+            id: 5,
+            titleKey: "items.gateway.title",
+            descriptionKey: "items.gateway.description",
+            altTextKey: "items.gateway.altText",
+            tags: ["Docker", "Nginx", "OAuth2", "WireGuard"],
+            links: {
+                demo: "#",
+                github: "#",
+            },
+            category: "DevOps & IoT",
+        },
+        {
+            id: 6,
+            titleKey: "items.monitoring.title",
+            descriptionKey: "items.monitoring.description",
+            altTextKey: "items.monitoring.altText",
+            tags: ["Grafana", "Prometheus", "Docker", "React"],
+            links: {
+                demo: "#",
+                github: "#",
+            },
+            category: "DevOps & IoT",
+        },
+    ]
+
+    const categories = [
+        { key: "all", label: t('categories.all') },
+        { key: "aiDevops", label: t('categories.aiDevops') },
+        { key: "web3d", label: t('categories.web3d') },
+        { key: "automation", label: t('categories.automation') },
+        { key: "qaTesting", label: t('categories.qaTesting') },
+        { key: "webDevops", label: t('categories.webDevops') },
+        { key: "devopsIot", label: t('categories.devopsIot') },
+    ]
 
     const filteredProjects = projects.filter(
         (project) => activeCategory === "All" || project.category === activeCategory
@@ -111,22 +121,22 @@ export function Projects() {
                         transition={{ duration: 0.5 }}
                     >
                         <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-                            Featured Projects
+                            {t('title')}
                         </h2>
                         <p className="mx-auto max-w-[700px] text-muted-foreground mt-4 md:text-lg">
-                            A selection of my recent work in automation, web development, and infrastructure.
+                            {t('subtitle')}
                         </p>
                     </motion.div>
 
                     <div className="flex flex-wrap justify-center gap-2 mt-8">
                         {categories.map((category) => (
                             <Button
-                                key={category}
-                                variant={activeCategory === category ? "default" : "outline"}
-                                onClick={() => setActiveCategory(category)}
+                                key={category.key}
+                                variant={activeCategory === category.label ? "default" : "outline"}
+                                onClick={() => setActiveCategory(category.label)}
                                 className="rounded-full"
                             >
-                                {category}
+                                {category.label}
                             </Button>
                         ))}
                     </div>
@@ -146,42 +156,42 @@ export function Projects() {
                                     {project.id === 1 ? (
                                         <Image
                                             src="/ai-workflow-automation.jpg"
-                                            alt={project.altText}
+                                            alt={t(project.altTextKey)}
                                             fill
                                             className="object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                     ) : project.id === 2 ? (
                                         <Image
                                             src="/portfolio-3d-landing.png"
-                                            alt={project.altText}
+                                            alt={t(project.altTextKey)}
                                             fill
                                             className="object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                     ) : project.id === 3 ? (
                                         <Image
                                             src="/3d-product-configurator.jpg"
-                                            alt={project.altText}
+                                            alt={t(project.altTextKey)}
                                             fill
                                             className="object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                     ) : project.id === 4 ? (
                                         <Image
                                             src="/e2e-testing-framework.jpg"
-                                            alt={project.altText}
+                                            alt={t(project.altTextKey)}
                                             fill
                                             className="object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                     ) : project.id === 5 ? (
                                         <Image
                                             src="/secure-hybrid-cloud-gateway.jpg"
-                                            alt={project.altText}
+                                            alt={t(project.altTextKey)}
                                             fill
                                             className="object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                     ) : project.id === 6 ? (
                                         <Image
                                             src="/homelab-monitoring-dashboard.jpg"
-                                            alt={project.altText}
+                                            alt={t(project.altTextKey)}
                                             fill
                                             className="object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
@@ -196,9 +206,9 @@ export function Projects() {
                                     )}
                                 </div>
                                 <CardHeader>
-                                    <CardTitle className="text-xl">{project.title}</CardTitle>
+                                    <CardTitle className="text-xl">{t(project.titleKey)}</CardTitle>
                                     <CardDescription className="line-clamp-2">
-                                        {project.description}
+                                        {t(project.descriptionKey)}
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent className="flex-grow">

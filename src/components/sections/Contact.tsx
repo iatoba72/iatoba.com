@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { motion } from "framer-motion"
 import { Mail, MapPin, Phone, Send, Linkedin } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import {
     Card,
@@ -35,6 +36,8 @@ interface FormStatus {
 }
 
 export function Contact() {
+    const t = useTranslations('contact')
+
     // Form state
     const [formData, setFormData] = useState<FormData>({
         firstName: '',
@@ -65,20 +68,20 @@ export function Contact() {
         const newErrors: FormErrors = {}
 
         if (!formData.firstName.trim()) {
-            newErrors.firstName = 'First name is required'
+            newErrors.firstName = t('errors.firstNameRequired')
         }
         if (!formData.lastName.trim()) {
-            newErrors.lastName = 'Last name is required'
+            newErrors.lastName = t('errors.lastNameRequired')
         }
         if (!formData.email.trim()) {
-            newErrors.email = 'Email is required'
+            newErrors.email = t('errors.emailRequired')
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            newErrors.email = 'Please enter a valid email'
+            newErrors.email = t('errors.emailInvalid')
         }
         if (!formData.message.trim()) {
-            newErrors.message = 'Message is required'
+            newErrors.message = t('errors.messageRequired')
         } else if (formData.message.trim().length < 10) {
-            newErrors.message = 'Message must be at least 10 characters'
+            newErrors.message = t('errors.messageMinLength')
         }
 
         setErrors(newErrors)
@@ -126,7 +129,7 @@ export function Contact() {
             if (data.success) {
                 setStatus({
                     type: 'success',
-                    message: "Thank you for your message! I'll get back to you soon.",
+                    message: t('successMessage'),
                 })
 
                 // Reset form
@@ -140,13 +143,13 @@ export function Contact() {
             } else {
                 setStatus({
                     type: 'error',
-                    message: 'Something went wrong. Please try again or email me directly.',
+                    message: t('errorMessage'),
                 })
             }
         } catch (error) {
             setStatus({
                 type: 'error',
-                message: 'Failed to send message. Please check your connection and try again.',
+                message: t('errorMessage'),
             })
             console.error('Form submission error:', error)
         }
@@ -162,10 +165,10 @@ export function Contact() {
                         transition={{ duration: 0.5 }}
                     >
                         <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-                            Get in Touch
+                            {t('title')}
                         </h2>
                         <p className="mx-auto max-w-[700px] text-muted-foreground mt-4 md:text-lg">
-                            Ready to start your next project? Contact me today for a consultation.
+                            {t('subtitle')}
                         </p>
                     </motion.div>
                 </div>
@@ -278,7 +281,7 @@ export function Contact() {
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <label htmlFor="firstName" className="text-sm font-medium">
-                                                First name
+                                                {t('firstName')}
                                             </label>
                                             <Input
                                                 id="firstName"
@@ -298,7 +301,7 @@ export function Contact() {
                                         </div>
                                         <div className="space-y-2">
                                             <label htmlFor="lastName" className="text-sm font-medium">
-                                                Last name
+                                                {t('lastName')}
                                             </label>
                                             <Input
                                                 id="lastName"
@@ -319,7 +322,7 @@ export function Contact() {
                                     </div>
                                     <div className="space-y-2">
                                         <label htmlFor="email" className="text-sm font-medium">
-                                            Email
+                                            {t('email')}
                                         </label>
                                         <Input
                                             id="email"
@@ -340,7 +343,7 @@ export function Contact() {
                                     </div>
                                     <div className="space-y-2">
                                         <label htmlFor="message" className="text-sm font-medium">
-                                            Message
+                                            {t('message')}
                                         </label>
                                         <Textarea
                                             id="message"
@@ -381,12 +384,12 @@ export function Contact() {
                                     >
                                         {status.type === 'loading' ? (
                                             <>
-                                                Sending...
+                                                {t('sending')}
                                                 <div className="ml-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                                             </>
                                         ) : (
                                             <>
-                                                Send Message
+                                                {t('send')}
                                                 <Send className="ml-2 h-4 w-4" />
                                             </>
                                         )}

@@ -1,0 +1,180 @@
+{
+  "navbar": {
+    "projects": "Proyectos",
+    "services": "Servicios",
+    "about": "Acerca",
+    "contact": "Contacto",
+    "toggleMenu": "Alternar menú",
+    "toggleTheme": "Alternar tema",
+    "light": "Claro",
+    "dark": "Oscuro"
+  },
+  "hero": {
+    "title": "Construyendo",
+    "titleHighlight": "Excelencia Digital",
+    "description": "Creo aplicaciones web de alto rendimiento con tecnologías modernas. Especializado en Next.js, React y flujos de trabajo automatizados.",
+    "viewProjects": "Ver Proyectos",
+    "contactMe": "Contáctame",
+    "classic": "Clásico",
+    "cityflight": "Vuelo Ciudad",
+    "construct": "Construir"
+  },
+  "projects": {
+    "title": "Proyectos Destacados",
+    "subtitle": "Una selección de mi trabajo reciente en automatización, desarrollo web e infraestructura.",
+    "viewProject": "Ver Proyecto",
+    "sourceCode": "Código Fuente",
+    "categories": {
+      "all": "Todos",
+      "aiDevops": "IA & DevOps",
+      "web3d": "Web & 3D",
+      "automation": "Automatización",
+      "qaTesting": "QA & Testing",
+      "webDevops": "Web & DevOps",
+      "devopsIot": "DevOps & IoT"
+    },
+    "items": {
+      "aiLab": {
+        "title": "Laboratorio de IA Auto-Hospedado y Hub de Automatización",
+        "description": "Un laboratorio de IA auto-hospedado para ejecutar múltiples LLMs y herramientas de IA localmente, orquestado con Docker y n8n.",
+        "altText": "Panel de laboratorio de IA auto-hospedado mostrando contenedores Docker ejecutando vLLM y OpenWebUI con flujos de trabajo de automatización n8n"
+      },
+      "portfolio": {
+        "title": "Portafolio Full-Stack & Landing 3D",
+        "description": "Un sitio de portafolio personal que muestra capacidades de stack moderno con elementos 3D interactivos.",
+        "altText": "Sitio web de portafolio moderno con elementos 3D interactivos construido con Next.js, Three.js y React"
+      },
+      "configurator": {
+        "title": "Configurador de Productos 3D Interactivo",
+        "description": "Un configurador 3D en tiempo real que permite a los usuarios personalizar productos con retroalimentación visual instantánea.",
+        "altText": "Configurador de productos 3D interactivo construido con Three.js y React Three Fiber mostrando personalización de productos en tiempo real"
+      },
+      "testing": {
+        "title": "Framework de Testing E2E",
+        "description": "Un framework de testing end-to-end basado en CodeceptJS integrado en pipelines CI/CD.",
+        "altText": "Panel de framework de testing end-to-end mostrando pruebas CodeceptJS integradas con pipeline CI/CD de Azure DevOps"
+      },
+      "gateway": {
+        "title": "Gateway de Nube Híbrida Segura",
+        "description": "Un gateway de acceso seguro que conecta sistemas legacy on-premise con aplicaciones cloud modernas usando principios zero-trust.",
+        "altText": "Diagrama de arquitectura de gateway de nube híbrida segura mostrando integración de Docker, Nginx, OAuth2 y WireGuard"
+      },
+      "monitoring": {
+        "title": "Dashboard de Monitoreo Homelab",
+        "description": "Un dashboard centralizado para monitorear la salud y métricas de servicios de IA auto-hospedados y automatización.",
+        "altText": "Dashboard de monitoreo homelab Grafana mostrando métricas Prometheus para servicios de IA auto-hospedados y Docker"
+      }
+    }
+  },
+  "services": {
+    "title": "Servicios",
+    "subtitle": "En qué puedo ayudarte",
+    "items": {
+      "fullstack": {
+        "title": "Web Full-Stack & Experiencias 3D",
+        "description": "Aplicaciones web modernas con React/Next.js y elementos 3D interactivos usando Three.js."
+      },
+      "api": {
+        "title": "Diseño de APIs & Lógica Backend",
+        "description": "APIs RESTful limpias e integraciones con servicios de terceros (Auth, Pagos, CRM)."
+      },
+      "automation": {
+        "title": "Automatización de Flujos de Trabajo",
+        "description": "Automatizaciones robustas con n8n y scripts personalizados para conectar herramientas y mover datos."
+      },
+      "ai": {
+        "title": "IA Auto-Hospedada & LLMs Locales",
+        "description": "Despliegue de LLM local (vLLM, OpenWebUI) y servicios de IA dockerizados expuestos de forma segura."
+      },
+      "devops": {
+        "title": "DevOps, CI/CD & Infraestructura",
+        "description": "Aplicaciones dockerizadas, pipelines de Azure DevOps y enrutamiento Nginx/Cloudflare."
+      },
+      "testing": {
+        "title": "Testing E2E & Automatización QA",
+        "description": "Suites de pruebas CodeceptJS automatizadas integradas en CI/CD para lanzamientos confiables."
+      }
+    }
+  },
+  "about": {
+    "title": "Sobre Mí",
+    "subtitle": "Un Desarrollador Full-Stack especializado en tecnologías web modernas, integraciones de IA y automatización",
+    "intro": "Construyo aplicaciones web de alto rendimiento, soluciones de IA auto-hospedadas y sistemas de automatización que resuelven problemas reales. Con experiencia que abarca React/Next.js, Three.js, Docker y despliegue de LLM local, conecto la tecnología de vanguardia con la implementación práctica.",
+    "cta": "Construyamos Algo",
+    "expertise": {
+      "aiLlm": {
+        "category": "IA Auto-Hospedada & Operaciones LLM",
+        "skills": [
+          "Ejecutando LLMs localmente con vLLM y OpenWebUI",
+          "ComfyUI para flujos de trabajo visuales/IA",
+          "Containerizando servicios de IA con Docker",
+          "Integrando IA en APIs y n8n"
+        ]
+      },
+      "homeLab": {
+        "category": "Home Lab & Infraestructura",
+        "skills": [
+          "Gestión de homelab para cargas de trabajo de IA",
+          "Proxies inversos (nginx) y SSL",
+          "DNS, seguridad y túneles Cloudflare",
+          "Fundamentos de Windows Server, AD, DNS, DHCP"
+        ]
+      },
+      "webDev": {
+        "category": "Desarrollo Web",
+        "skills": [
+          "React y Next.js (SPA, SSR, ISR)",
+          "Three.js para experiencias interactivas 3D",
+          "Arquitecturas impulsadas por API e integraciones",
+          "Dashboards responsivos y SEO-friendly"
+        ]
+      },
+      "data": {
+        "category": "Datos & Bases de Datos",
+        "skills": [
+          "PostgreSQL y MongoDB",
+          "Diseño de esquemas y optimización de consultas",
+          "Experiencia con MySQL y SQL Server"
+        ]
+      },
+      "automation": {
+        "category": "Automatización & Integraciones",
+        "skills": [
+          "Automatizaciones multi-herramienta vía APIs/webhooks",
+          "Orquestación n8n para servicios e IA",
+          "Flujos de automatización personalizados para sincronización de datos"
+        ]
+      },
+      "devops": {
+        "category": "DevOps & CI/CD",
+        "skills": [
+          "Stacks multi-servicio con Docker Compose",
+          "Pipelines de Azure DevOps y flujos de trabajo Git",
+          "Testing E2E con CodeceptJS"
+        ]
+      }
+    }
+  },
+  "contact": {
+    "title": "Ponte en Contacto",
+    "subtitle": "Trabajemos juntos en tu próximo proyecto",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "email": "Correo Electrónico",
+    "message": "Mensaje",
+    "send": "Enviar Mensaje",
+    "sending": "Enviando...",
+    "successMessage": "¡Gracias! Tu mensaje ha sido enviado exitosamente.",
+    "errorMessage": "¡Ups! Algo salió mal. Por favor intenta de nuevo.",
+    "emailInfo": "iatoba@proton.me",
+    "locationInfo": "Remoto / Disponible en Todo el Mundo",
+    "errors": {
+      "firstNameRequired": "El nombre es requerido",
+      "lastNameRequired": "El apellido es requerido",
+      "emailRequired": "El correo electrónico es requerido",
+      "emailInvalid": "Por favor ingresa un correo electrónico válido",
+      "messageRequired": "El mensaje es requerido",
+      "messageMinLength": "El mensaje debe tener al menos 10 caracteres"
+    }
+  }
+}
