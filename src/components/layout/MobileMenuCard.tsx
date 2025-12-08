@@ -17,10 +17,17 @@ export function MobileMenuCard({
   index,
   onClick
 }: MobileMenuCardProps) {
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    onClick(e)
+  }
+
   return (
     <motion.a
       href={href}
-      onClick={onClick}
+      onClick={handleClick}
+      onTap={handleClick as any}
       className={cn(
         // Base layout
         "block relative overflow-hidden rounded-[10px] cursor-pointer",

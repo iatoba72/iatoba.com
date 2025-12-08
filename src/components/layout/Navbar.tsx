@@ -84,7 +84,7 @@ export function Navbar() {
                         </SheetTrigger>
                         <SheetContent
                             side="right"
-                            className="w-[90vw] max-w-[380px] sm:max-w-[340px] bg-background/60 backdrop-blur-xl border-border/10"
+                            className="w-[63vw] max-w-[266px] sm:max-w-[238px] bg-background/60 backdrop-blur-xl border-border/10"
                         >
                             <nav
                                 className="flex flex-col gap-4 mt-12 px-3"
