@@ -8,6 +8,8 @@ import { ModeToggle } from "@/components/mode-toggle"
 import { LanguageToggle } from "@/components/language-toggle"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { AnimatePresence } from "framer-motion"
+import { MobileMenuCard } from "./MobileMenuCard"
 
 export function Navbar() {
     const t = useTranslations('navbar')
@@ -80,25 +82,36 @@ export function Navbar() {
                                 <span className="sr-only">{t('toggleMenu')}</span>
                             </Button>
                         </SheetTrigger>
-                        <SheetContent side="right" className="w-[85vw] max-w-[300px] sm:max-w-[250px]">
-                            <nav className="flex flex-col gap-6 mt-8 px-2">
-                                {navigation.map((item) => (
-                                    <a
-                                        key={item.name}
-                                        href={item.href}
-                                        className="text-2xl font-medium transition-colors hover:text-primary block px-4 py-2"
-                                        onClick={(e) => {
-                                            e.preventDefault()
-                                            const element = document.querySelector(item.href)
-                                            if (element) {
-                                                element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                                            }
-                                            setIsMenuOpen(false)
-                                        }}
-                                    >
-                                        {item.name}
-                                    </a>
-                                ))}
+                        <SheetContent
+                            side="right"
+                            className="w-[90vw] max-w-[380px] sm:max-w-[340px] bg-background/60 backdrop-blur-xl border-border/10"
+                        >
+                            <nav
+                                className="flex flex-col gap-4 mt-12 px-3"
+                                role="navigation"
+                                aria-label="Mobile navigation"
+                            >
+                                <AnimatePresence mode="wait">
+                                    {isMenuOpen && navigation.map((item, index) => (
+                                        <MobileMenuCard
+                                            key={item.name}
+                                            href={item.href}
+                                            label={item.name}
+                                            index={index}
+                                            onClick={(e) => {
+                                                e.preventDefault()
+                                                const element = document.querySelector(item.href)
+                                                if (element) {
+                                                    element.scrollIntoView({
+                                                        behavior: 'smooth',
+                                                        block: 'start'
+                                                    })
+                                                }
+                                                setIsMenuOpen(false)
+                                            }}
+                                        />
+                                    ))}
+                                </AnimatePresence>
                             </nav>
                         </SheetContent>
                     </Sheet>
