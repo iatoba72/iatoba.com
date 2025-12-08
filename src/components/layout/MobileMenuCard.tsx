@@ -18,14 +18,25 @@ export function MobileMenuCard({
   onClick
 }: MobileMenuCardProps) {
   const handleInteraction = () => {
+    console.log('🔵 MobileMenuCard: handleInteraction called')
+    console.log('  - Label:', label)
+    console.log('  - Href:', href)
+    console.log('  - Index:', index)
+
     // Create a synthetic event for the onClick handler
     const syntheticEvent = {
-      preventDefault: () => {},
-      stopPropagation: () => {},
+      preventDefault: () => {
+        console.log('  - preventDefault called')
+      },
+      stopPropagation: () => {
+        console.log('  - stopPropagation called')
+      },
       currentTarget: { href }
     } as unknown as React.MouseEvent
 
+    console.log('  - Calling onClick handler...')
     onClick(syntheticEvent)
+    console.log('  - onClick handler completed')
   }
 
   return (
