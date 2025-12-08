@@ -24,10 +24,6 @@ export function Navbar() {
     ]
 
     React.useEffect(() => {
-        console.log('📋 Navigation items:', navigation)
-    }, [navigation])
-
-    React.useEffect(() => {
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 0)
         }
@@ -103,31 +99,15 @@ export function Navbar() {
                                             label={item.name}
                                             index={index}
                                             onClick={(e) => {
-                                                console.log('🟢 Navbar: onClick handler called')
-                                                console.log('  - Item name:', item.name)
-                                                console.log('  - Item href:', item.href)
-
                                                 e.preventDefault()
-                                                console.log('  - preventDefault called')
-
-                                                console.log('  - Querying for element:', item.href)
                                                 const element = document.querySelector(item.href)
-                                                console.log('  - Element found:', element)
-
                                                 if (element) {
-                                                    console.log('  - Scrolling to element...')
                                                     element.scrollIntoView({
                                                         behavior: 'smooth',
                                                         block: 'start'
                                                     })
-                                                    console.log('  - scrollIntoView called')
-                                                } else {
-                                                    console.error('  - ❌ Element not found for:', item.href)
                                                 }
-
-                                                console.log('  - Closing menu...')
                                                 setIsMenuOpen(false)
-                                                console.log('  - Menu closed')
                                             }}
                                         />
                                     ))}
