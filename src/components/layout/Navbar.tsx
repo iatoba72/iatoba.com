@@ -69,12 +69,18 @@ export function Navbar() {
                     <ModeToggle />
                     <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                         <SheetTrigger asChild>
-                            <Button variant="ghost" size="icon" className="md:hidden" suppressHydrationWarning>
-                                <Menu className="h-5 w-5" />
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                suppressHydrationWarning
+                                aria-label={t('toggleMenu')}
+                                aria-expanded={isMenuOpen}
+                            >
+                                <Menu className="h-5 w-5" aria-hidden="true" />
                                 <span className="sr-only">{t('toggleMenu')}</span>
                             </Button>
                         </SheetTrigger>
-                        <SheetContent side="right" className="w-[40%] sm:max-w-[250px]">
+                        <SheetContent side="right" className="w-[85vw] max-w-[300px] sm:max-w-[250px]">
                             <nav className="flex flex-col gap-6 mt-8 px-2">
                                 {navigation.map((item) => (
                                     <a
