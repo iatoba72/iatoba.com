@@ -17,17 +17,29 @@ export function MobileMenuCard({
   index,
   onClick
 }: MobileMenuCardProps) {
-  const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    onClick(e)
+  const handleInteraction = () => {
+    // Create a synthetic event for the onClick handler
+    const syntheticEvent = {
+      preventDefault: () => {},
+      stopPropagation: () => {},
+      currentTarget: { href }
+    } as unknown as React.MouseEvent
+
+    onClick(syntheticEvent)
   }
 
   return (
-    <motion.a
-      href={href}
-      onClick={handleClick}
-      onTap={handleClick as any}
+    <motion.div
+      role="button"
+      tabIndex={0}
+      onClick={handleInteraction}
+      onTap={handleInteraction}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          handleInteraction()
+        }
+      }}
       className={cn(
         // Base layout
         "block relative overflow-hidden rounded-[10px] cursor-pointer",
@@ -79,6 +91,6 @@ export function MobileMenuCard({
 
       {/* Subtle gradient overlay for depth */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/5 pointer-events-none opacity-0 hover:opacity-100 transition-opacity duration-300" />
-    </motion.a>
+    </motion.div>
   )
 }
