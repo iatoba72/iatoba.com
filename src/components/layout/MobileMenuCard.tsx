@@ -34,6 +34,10 @@ export function MobileMenuCard({
     <motion.button
       type="button"
       onClick={handleClick}
+      onTouchEnd={(e) => {
+        e.preventDefault()
+        handleClick()
+      }}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
@@ -44,6 +48,7 @@ export function MobileMenuCard({
         // Base layout
         "block relative overflow-hidden rounded-[10px] cursor-pointer",
         "px-6 py-5",
+        "touch-manipulation",  // Prevent double-tap zoom
 
         // Glassmorphism
         "bg-card/90 backdrop-blur-md",
