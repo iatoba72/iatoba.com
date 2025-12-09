@@ -17,7 +17,7 @@ export function MobileMenuCard({
   index,
   onNavigate
 }: MobileMenuCardProps) {
-  const handleNavigation = () => {
+  const handleClick = () => {
     // Scroll to the target section
     const element = document.querySelector(href)
     if (element) {
@@ -27,45 +27,12 @@ export function MobileMenuCard({
       })
     }
 
-    // Close menu after a short delay
-    setTimeout(() => {
-      onNavigate()
-    }, 300)
+    // Close menu immediately on mobile
+    onNavigate()
   }
 
   return (
-    <motion.a
-      href={href}
-      onTap={handleNavigation}  // Primary handler for touch devices
-      onClick={(e) => {
-        e.preventDefault()
-        handleNavigation()
-      }}
-      className={cn(
-        // Base layout
-        "block relative overflow-hidden rounded-[10px] cursor-pointer",
-        "px-6 py-5",
-        "no-underline",
-
-        // Touch optimization
-        "touch-manipulation",  // Removes 300ms tap delay on mobile
-
-        // Glassmorphism
-        "bg-card/90 backdrop-blur-md",
-        "border border-border/20",
-
-        // 3D depth shadows
-        "shadow-xl shadow-black/10 dark:shadow-black/30",
-
-        // Hover enhancements
-        "hover:shadow-2xl hover:border-primary/30",
-        "transition-shadow duration-300",
-
-        // Focus state
-        "focus-visible:outline-none focus-visible:ring-2",
-        "focus-visible:ring-primary focus-visible:ring-offset-2"
-      )}
-
+    <motion.div
       // Entrance animation (staggered)
       initial={{ opacity: 0, x: 60, scale: 0.9 }}
       animate={{ opacity: 1, x: 0, scale: 1 }}
@@ -74,32 +41,46 @@ export function MobileMenuCard({
         type: "spring",
         stiffness: 260,
         damping: 20,
-        delay: index * 0.05  // Reduced for faster interactivity
-      }}
-
-      // Hover interaction - desktop only
-      whileHover={{
-        scale: 1.03,
-        y: -4,
-        transition: { type: "spring", stiffness: 400, damping: 25 }
-      }}
-
-      // Tap feedback for mobile
-      whileTap={{ scale: 0.97 }}
-
-      // Ensure touch events work properly
-      style={{
-        WebkitTapHighlightColor: 'transparent',
-        pointerEvents: 'auto',  // Keep clickable during animations
-        touchAction: 'manipulation'  // Optimize for touch
+        delay: index * 0.05
       }}
     >
-      <span className="text-xl font-semibold tracking-tight pointer-events-none">
-        {label}
-      </span>
+      <button
+        onClick={handleClick}
+        className={cn(
+          // Base layout
+          "w-full text-left relative overflow-hidden rounded-[10px] cursor-pointer",
+          "px-6 py-5",
 
-      {/* Subtle gradient overlay for depth */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/5 pointer-events-none opacity-0 hover:opacity-100 transition-opacity duration-300" />
-    </motion.a>
+          // Touch optimization
+          "touch-manipulation",
+
+          // Glassmorphism
+          "bg-card/90 backdrop-blur-md",
+          "border border-border/20",
+
+          // 3D depth shadows
+          "shadow-xl shadow-black/10 dark:shadow-black/30",
+
+          // Hover enhancements
+          "hover:shadow-2xl hover:border-primary/30",
+          "hover:scale-[1.03] hover:-translate-y-1",
+          "transition-all duration-300",
+
+          // Active/tap state
+          "active:scale-[0.97]",
+
+          // Focus state
+          "focus-visible:outline-none focus-visible:ring-2",
+          "focus-visible:ring-primary focus-visible:ring-offset-2"
+        )}
+      >
+        <span className="text-xl font-semibold tracking-tight block relative z-10">
+          {label}
+        </span>
+
+        {/* Subtle gradient overlay for depth */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/5 pointer-events-none opacity-0 hover:opacity-100 transition-opacity duration-300" />
+      </button>
+    </motion.div>
   )
 }
