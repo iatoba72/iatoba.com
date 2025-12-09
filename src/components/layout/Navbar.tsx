@@ -82,7 +82,7 @@ export function Navbar() {
                 <div className="flex items-center gap-2 md:hidden">
                     <LanguageToggle />
                     <ModeToggle />
-                    <Sheet open={isMenuOpen} onOpenChange={handleMenuChange}>
+                    <Sheet open={isMenuOpen} onOpenChange={handleMenuChange} modal={false}>
                         <SheetTrigger asChild>
                             <Button
                                 variant="ghost"
