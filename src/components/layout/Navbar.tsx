@@ -98,17 +98,7 @@ export function Navbar() {
                                             href={item.href}
                                             label={item.name}
                                             index={index}
-                                            onClick={(e) => {
-                                                e.preventDefault()
-                                                const element = document.querySelector(item.href)
-                                                if (element) {
-                                                    element.scrollIntoView({
-                                                        behavior: 'smooth',
-                                                        block: 'start'
-                                                    })
-                                                }
-                                                setIsMenuOpen(false)
-                                            }}
+                                            onNavigate={() => setIsMenuOpen(false)}
                                         />
                                     ))}
                                 </AnimatePresence>

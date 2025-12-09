@@ -8,36 +8,36 @@ interface MobileMenuCardProps {
   href: string
   label: string
   index: number
-  onClick: (e: React.MouseEvent) => void
+  onNavigate: () => void
 }
 
 export function MobileMenuCard({
   href,
   label,
   index,
-  onClick
+  onNavigate
 }: MobileMenuCardProps) {
-  const handleInteraction = () => {
-    // Create a synthetic event for the onClick handler
-    const syntheticEvent = {
-      preventDefault: () => {},
-      stopPropagation: () => {},
-      currentTarget: { href }
-    } as unknown as React.MouseEvent
-
-    onClick(syntheticEvent)
+  const handleClick = () => {
+    // Scroll to the target section
+    const element = document.querySelector(href)
+    if (element) {
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      })
+    }
+    // Notify parent to close menu
+    onNavigate()
   }
 
   return (
-    <motion.div
-      role="button"
-      tabIndex={0}
-      onClick={handleInteraction}
-      onTap={handleInteraction}
+    <motion.button
+      type="button"
+      onClick={handleClick}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
-          handleInteraction()
+          handleClick()
         }
       }}
       className={cn(
@@ -91,6 +91,6 @@ export function MobileMenuCard({
 
       {/* Subtle gradient overlay for depth */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/5 pointer-events-none opacity-0 hover:opacity-100 transition-opacity duration-300" />
-    </motion.div>
+    </motion.button>
   )
 }
