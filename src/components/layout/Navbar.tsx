@@ -23,6 +23,19 @@ export function Navbar() {
         { name: t('contact'), href: "#contact" },
     ]
 
+    // Handle menu state changes with pointer-events fix
+    const handleMenuChange = (open: boolean) => {
+        setIsMenuOpen(open)
+        // Workaround for Radix UI pointer-events bug on mobile
+        if (!open) {
+            setTimeout(() => {
+                if (document.body.style.pointerEvents === 'none') {
+                    document.body.style.pointerEvents = 'auto'
+                }
+            }, 0)
+        }
+    }
+
     React.useEffect(() => {
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 0)
@@ -69,7 +82,7 @@ export function Navbar() {
                 <div className="flex items-center gap-2 md:hidden">
                     <LanguageToggle />
                     <ModeToggle />
-                    <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+                    <Sheet open={isMenuOpen} onOpenChange={handleMenuChange}>
                         <SheetTrigger asChild>
                             <Button
                                 variant="ghost"
@@ -85,6 +98,7 @@ export function Navbar() {
                         <SheetContent
                             side="right"
                             className="w-[63vw] max-w-[266px] sm:max-w-[238px] bg-background/60 backdrop-blur-xl border-border/10"
+                            style={{ pointerEvents: 'auto' }}
                         >
                             <nav
                                 className="flex flex-col gap-4 mt-12 px-3"
@@ -98,7 +112,7 @@ export function Navbar() {
                                             href={item.href}
                                             label={item.name}
                                             index={index}
-                                            onNavigate={() => setIsMenuOpen(false)}
+                                            onNavigate={() => handleMenuChange(false)}
                                         />
                                     ))}
                                 </AnimatePresence>

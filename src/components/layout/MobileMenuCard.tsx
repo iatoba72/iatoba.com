@@ -17,9 +17,7 @@ export function MobileMenuCard({
   index,
   onNavigate
 }: MobileMenuCardProps) {
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault()
-
+  const handleNavigation = () => {
     // Scroll to the target section
     const element = document.querySelector(href)
     if (element) {
@@ -38,12 +36,19 @@ export function MobileMenuCard({
   return (
     <motion.a
       href={href}
-      onClick={handleClick}
+      onTap={handleNavigation}  // Primary handler for touch devices
+      onClick={(e) => {
+        e.preventDefault()
+        handleNavigation()
+      }}
       className={cn(
         // Base layout
         "block relative overflow-hidden rounded-[10px] cursor-pointer",
         "px-6 py-5",
-        "no-underline",  // Remove link underline
+        "no-underline",
+
+        // Touch optimization
+        "touch-manipulation",  // Removes 300ms tap delay on mobile
 
         // Glassmorphism
         "bg-card/90 backdrop-blur-md",
@@ -69,23 +74,27 @@ export function MobileMenuCard({
         type: "spring",
         stiffness: 260,
         damping: 20,
-        delay: index * 0.08  // 80ms stagger between cards
+        delay: index * 0.05  // Reduced for faster interactivity
       }}
 
-      // Hover interaction
+      // Hover interaction - desktop only
       whileHover={{
         scale: 1.03,
         y: -4,
         transition: { type: "spring", stiffness: 400, damping: 25 }
       }}
 
-      // Press/tap feedback
-      whileTap={{
-        scale: 0.98,
-        transition: { duration: 0.1 }
+      // Tap feedback for mobile
+      whileTap={{ scale: 0.97 }}
+
+      // Ensure touch events work properly
+      style={{
+        WebkitTapHighlightColor: 'transparent',
+        pointerEvents: 'auto',  // Keep clickable during animations
+        touchAction: 'manipulation'  // Optimize for touch
       }}
     >
-      <span className="text-xl font-semibold tracking-tight">
+      <span className="text-xl font-semibold tracking-tight pointer-events-none">
         {label}
       </span>
 
