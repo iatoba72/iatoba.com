@@ -17,59 +17,33 @@ export function MobileMenuCard({
   index,
   onNavigate
 }: MobileMenuCardProps) {
-  const handleClick = (e?: React.MouseEvent | React.TouchEvent) => {
-    if (e) {
-      e.preventDefault()
-      e.stopPropagation()
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault()
+
+    // Scroll to the target section
+    const element = document.querySelector(href)
+    if (element) {
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      })
     }
 
-    // Use setTimeout to ensure touch event completes first
+    // Close menu after a short delay
     setTimeout(() => {
-      // Scroll to the target section
-      const element = document.querySelector(href)
-      if (element) {
-        element.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
-        })
-      }
-      // Notify parent to close menu after scrolling starts
-      setTimeout(() => {
-        onNavigate()
-      }, 100)
-    }, 50)
+      onNavigate()
+    }, 300)
   }
 
   return (
-    <motion.button
-      type="button"
-      onClick={(e) => {
-        e.preventDefault()
-        handleClick(e)
-      }}
-      onTouchStart={(e) => {
-        // Mark the touch to handle in touchend
-        e.currentTarget.dataset.touched = 'true'
-      }}
-      onTouchEnd={(e) => {
-        // Only handle if this was a tap (not a scroll)
-        if (e.currentTarget.dataset.touched === 'true') {
-          e.preventDefault()
-          handleClick(e)
-          delete e.currentTarget.dataset.touched
-        }
-      }}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault()
-          handleClick()
-        }
-      }}
+    <motion.a
+      href={href}
+      onClick={handleClick}
       className={cn(
         // Base layout
         "block relative overflow-hidden rounded-[10px] cursor-pointer",
         "px-6 py-5",
-        "touch-manipulation",  // Prevent double-tap zoom
+        "no-underline",  // Remove link underline
 
         // Glassmorphism
         "bg-card/90 backdrop-blur-md",
@@ -117,6 +91,6 @@ export function MobileMenuCard({
 
       {/* Subtle gradient overlay for depth */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/5 pointer-events-none opacity-0 hover:opacity-100 transition-opacity duration-300" />
-    </motion.button>
+    </motion.a>
   )
 }
