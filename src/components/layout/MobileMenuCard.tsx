@@ -21,9 +21,13 @@ export function MobileMenuCard({
     // Scroll to the target section
     const element = document.querySelector(href)
     if (element) {
-      element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
+      const headerOffset = 64 // Height of the fixed header (h-16)
+      const elementPosition = element.getBoundingClientRect().top
+      const offsetPosition = elementPosition + window.scrollY - headerOffset
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
       })
     }
 
