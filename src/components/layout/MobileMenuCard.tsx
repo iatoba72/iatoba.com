@@ -17,26 +17,47 @@ export function MobileMenuCard({
   index,
   onNavigate
 }: MobileMenuCardProps) {
-  const handleClick = () => {
-    // Scroll to the target section
-    const element = document.querySelector(href)
-    if (element) {
-      element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      })
+  const handleClick = (e?: React.MouseEvent | React.TouchEvent) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
     }
-    // Notify parent to close menu
-    onNavigate()
+
+    // Use setTimeout to ensure touch event completes first
+    setTimeout(() => {
+      // Scroll to the target section
+      const element = document.querySelector(href)
+      if (element) {
+        element.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        })
+      }
+      // Notify parent to close menu after scrolling starts
+      setTimeout(() => {
+        onNavigate()
+      }, 100)
+    }, 50)
   }
 
   return (
     <motion.button
       type="button"
-      onClick={handleClick}
-      onTouchEnd={(e) => {
+      onClick={(e) => {
         e.preventDefault()
-        handleClick()
+        handleClick(e)
+      }}
+      onTouchStart={(e) => {
+        // Mark the touch to handle in touchend
+        e.currentTarget.dataset.touched = 'true'
+      }}
+      onTouchEnd={(e) => {
+        // Only handle if this was a tap (not a scroll)
+        if (e.currentTarget.dataset.touched === 'true') {
+          e.preventDefault()
+          handleClick(e)
+          delete e.currentTarget.dataset.touched
+        }
       }}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
