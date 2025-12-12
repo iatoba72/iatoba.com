@@ -182,9 +182,9 @@ export function Contact() {
                     >
                         <Card className="h-full">
                             <CardHeader>
-                                <CardTitle>Contact Information</CardTitle>
+                                <CardTitle>{t('contactInformation')}</CardTitle>
                                 <CardDescription>
-                                    Feel free to reach out through any of these channels.
+                                    {t('contactDescription')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
@@ -196,7 +196,7 @@ export function Contact() {
                                         <Mail className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <p className="font-medium">Email</p>
+                                        <p className="font-medium">{t('emailLabel')}</p>
                                         <p className="text-muted-foreground hover:underline">
                                             iatoba@gmail.com
                                         </p>
@@ -212,7 +212,7 @@ export function Contact() {
                                         <Phone className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <p className="font-medium">Phone</p>
+                                        <p className="font-medium">{t('phoneLabel')}</p>
                                         <p className="text-muted-foreground hover:underline">
                                             +54 9 11 5322 6235
                                         </p>
@@ -228,7 +228,7 @@ export function Contact() {
                                         <MapPin className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <p className="font-medium">Location</p>
+                                        <p className="font-medium">{t('locationLabel')}</p>
                                         <p className="text-muted-foreground hover:underline">Buenos Aires, Argentina</p>
                                     </div>
                                 </a>
@@ -242,7 +242,7 @@ export function Contact() {
                                         <Linkedin className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <p className="font-medium">LinkedIn</p>
+                                        <p className="font-medium">{t('linkedinLabel')}</p>
                                         <p className="text-muted-foreground hover:underline">
                                             linkedin.com/in/iatoba
                                         </p>
@@ -260,9 +260,9 @@ export function Contact() {
                     >
                         <Card>
                             <CardHeader>
-                                <CardTitle>Send a Message</CardTitle>
+                                <CardTitle>{t('sendMessageTitle')}</CardTitle>
                                 <CardDescription>
-                                    I'll get back to you as soon as possible.
+                                    {t('sendMessageDescription')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -286,7 +286,7 @@ export function Contact() {
                                             <Input
                                                 id="firstName"
                                                 name="firstName"
-                                                placeholder="John"
+                                                placeholder={t('firstNamePlaceholder')}
                                                 value={formData.firstName}
                                                 onChange={handleInputChange}
                                                 disabled={status.type === 'loading'}
@@ -306,7 +306,7 @@ export function Contact() {
                                             <Input
                                                 id="lastName"
                                                 name="lastName"
-                                                placeholder="Doe"
+                                                placeholder={t('lastNamePlaceholder')}
                                                 value={formData.lastName}
                                                 onChange={handleInputChange}
                                                 disabled={status.type === 'loading'}
@@ -328,7 +328,7 @@ export function Contact() {
                                             id="email"
                                             name="email"
                                             type="email"
-                                            placeholder="john@example.com"
+                                            placeholder={t('emailPlaceholder')}
                                             value={formData.email}
                                             onChange={handleInputChange}
                                             disabled={status.type === 'loading'}
@@ -348,7 +348,7 @@ export function Contact() {
                                         <Textarea
                                             id="message"
                                             name="message"
-                                            placeholder="Tell me about your project..."
+                                            placeholder={t('messagePlaceholder')}
                                             className="min-h-[120px]"
                                             value={formData.message}
                                             onChange={handleInputChange}
