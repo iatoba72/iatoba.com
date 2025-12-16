@@ -88,7 +88,7 @@ export function Contact() {
         return Object.keys(newErrors).length === 0
     }
 
-    // Handle form submission
+    // Handle form submission with dual submission (n8n webhook + Web3Forms backup)
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
@@ -110,14 +110,65 @@ export function Contact() {
         setStatus({ type: 'loading' })
 
         try {
-            // Use FormData for simpler submission
+            // Prepare data for both submissions
+            const fullName = `${formData.firstName} ${formData.lastName}`
+            const timestamp = new Date().toISOString()
+            const messageId = `web-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+
+            // === 1. Submit to n8n webhook (primary - for lead processing) ===
+            const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL
+            let webhookSuccess = false
+
+            if (webhookUrl) {
+                try {
+                    const webhookPayload = {
+                        // Message identifiers (compatible with workflow's duplicate detection)
+                        id: messageId,
+                        message_id: messageId,
+
+                        // Sender information (compatible with workflow's enrichment)
+                        from: `${fullName} <${formData.email}>`,
+                        sender_email: formData.email,
+
+                        // Content
+                        subject: `Website Contact: ${fullName}`,
+                        body: formData.message,
+                        snippet: formData.message.substring(0, 200),
+
+                        // Additional metadata for lead scoring
+                        firstName: formData.firstName,
+                        lastName: formData.lastName,
+                        source: 'iatoba.com_contact_form',
+                        date: timestamp,
+                        submittedAt: timestamp,
+                    }
+
+                    const webhookResponse = await fetch(webhookUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(webhookPayload),
+                    })
+
+                    webhookSuccess = webhookResponse.ok
+
+                    if (!webhookSuccess) {
+                        console.warn('n8n webhook submission failed:', webhookResponse.status)
+                    }
+                } catch (webhookError) {
+                    console.warn('n8n webhook error (continuing with Web3Forms):', webhookError)
+                }
+            }
+
+            // === 2. Submit to Web3Forms (backup - for email notification) ===
             const submitData = new FormData()
             submitData.append('access_key', process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY || '')
-            submitData.append('name', `${formData.firstName} ${formData.lastName}`)
+            submitData.append('name', fullName)
             submitData.append('email', formData.email)
             submitData.append('message', formData.message)
-            submitData.append('from_name', `${formData.firstName} ${formData.lastName}`)
-            submitData.append('subject', `New Contact Form Submission from ${formData.firstName} ${formData.lastName}`)
+            submitData.append('from_name', fullName)
+            submitData.append('subject', `New Contact Form Submission from ${fullName}`)
 
             const response = await fetch('https://api.web3forms.com/submit', {
                 method: 'POST',
@@ -126,7 +177,8 @@ export function Contact() {
 
             const data = await response.json()
 
-            if (data.success) {
+            // Success if either submission worked (prefer both, but one is enough)
+            if (data.success || webhookSuccess) {
                 setStatus({
                     type: 'success',
                     message: t('successMessage'),
