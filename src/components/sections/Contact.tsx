@@ -143,10 +143,12 @@ export function Contact() {
                         submittedAt: timestamp,
                     }
 
+                    const webhookToken = process.env.NEXT_PUBLIC_N8N_WEBHOOK_TOKEN
                     const webhookResponse = await fetch(webhookUrl, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
+                            ...(webhookToken && { 'X-Webhook-Token': webhookToken }),
                         },
                         body: JSON.stringify(webhookPayload),
                     })
