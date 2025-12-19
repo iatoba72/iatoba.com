@@ -50,6 +50,13 @@ export function Contact() {
     const [status, setStatus] = useState<FormStatus>({ type: 'idle' })
     const [honeypot, setHoneypot] = useState('')
 
+    // Security: Track form load time (bots submit too fast)
+    const [formLoadTime] = useState(Date.now())
+
+    // Security: Rate limiting (max submissions per session)
+    const [submissionCount, setSubmissionCount] = useState(0)
+    const MAX_SUBMISSIONS = 3
+
     // Handle input changes
     const handleInputChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -92,9 +99,25 @@ export function Contact() {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
-        // Honeypot spam check
+        // Security: Honeypot spam check
         if (honeypot) {
-            console.log('Bot detected')
+            console.log('Bot detected: honeypot filled')
+            return
+        }
+
+        // Security: Time-based detection (bots submit too fast, < 3 seconds)
+        const timeSpent = Date.now() - formLoadTime
+        if (timeSpent < 3000) {
+            console.log('Bot detected: form submitted too fast', timeSpent, 'ms')
+            return
+        }
+
+        // Security: Rate limiting
+        if (submissionCount >= MAX_SUBMISSIONS) {
+            setStatus({
+                type: 'error',
+                message: t('errors.tooManySubmissions'),
+            })
             return
         }
 
@@ -181,6 +204,9 @@ export function Contact() {
 
             // Success if either submission worked (prefer both, but one is enough)
             if (data.success || webhookSuccess) {
+                // Increment submission count for rate limiting
+                setSubmissionCount(prev => prev + 1)
+
                 setStatus({
                     type: 'success',
                     message: t('successMessage'),
@@ -321,15 +347,16 @@ export function Contact() {
                             </CardHeader>
                             <CardContent>
                                 <form className="space-y-4" onSubmit={handleSubmit}>
-                                    {/* Honeypot field (hidden from users) */}
+                                    {/* Honeypot field - hidden from users, attractive to bots */}
                                     <input
                                         type="text"
-                                        name="botcheck"
+                                        name="website"
                                         value={honeypot}
                                         onChange={(e) => setHoneypot(e.target.value)}
-                                        style={{ display: 'none' }}
+                                        className="absolute -left-[9999px] opacity-0 h-0 w-0 pointer-events-none"
                                         tabIndex={-1}
                                         autoComplete="off"
+                                        aria-hidden="true"
                                     />
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
