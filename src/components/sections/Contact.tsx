@@ -95,24 +95,24 @@ export function Contact() {
         return Object.keys(newErrors).length === 0
     }
 
-    // Handle form submission with dual submission (n8n webhook + Web3Forms backup)
+    // Handle form submission through Cloudflare Pages Function
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
-        // Security: Honeypot spam check
+        // Security: Honeypot spam check (client-side first layer)
         if (honeypot) {
             console.log('Bot detected: honeypot filled')
             return
         }
 
-        // Security: Time-based detection (bots submit too fast, < 3 seconds)
+        // Security: Time-based detection (client-side first layer)
         const timeSpent = Date.now() - formLoadTime
         if (timeSpent < 3000) {
             console.log('Bot detected: form submitted too fast', timeSpent, 'ms')
             return
         }
 
-        // Security: Rate limiting
+        // Security: Rate limiting (client-side session limit)
         if (submissionCount >= MAX_SUBMISSIONS) {
             setStatus({
                 type: 'error',
@@ -121,7 +121,7 @@ export function Contact() {
             return
         }
 
-        // Validate
+        // Validate form (client-side UX)
         if (!validateForm()) {
             setStatus({
                 type: 'error',
@@ -133,77 +133,25 @@ export function Contact() {
         setStatus({ type: 'loading' })
 
         try {
-            // Prepare data for both submissions
-            const fullName = `${formData.firstName} ${formData.lastName}`
-            const timestamp = new Date().toISOString()
-            const messageId = `web-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
-
-            // === 1. Submit to n8n webhook (primary - for lead processing) ===
-            const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL
-            let webhookSuccess = false
-
-            if (webhookUrl) {
-                try {
-                    const webhookPayload = {
-                        // Message identifiers (compatible with workflow's duplicate detection)
-                        id: messageId,
-                        message_id: messageId,
-
-                        // Sender information (compatible with workflow's enrichment)
-                        from: `${fullName} <${formData.email}>`,
-                        sender_email: formData.email,
-
-                        // Content
-                        subject: `Website Contact: ${fullName}`,
-                        body: formData.message,
-                        snippet: formData.message.substring(0, 200),
-
-                        // Additional metadata for lead scoring
-                        firstName: formData.firstName,
-                        lastName: formData.lastName,
-                        source: 'iatoba.com_contact_form',
-                        date: timestamp,
-                        submittedAt: timestamp,
-                    }
-
-                    const webhookToken = process.env.NEXT_PUBLIC_N8N_WEBHOOK_TOKEN
-                    const webhookResponse = await fetch(webhookUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            ...(webhookToken && { 'X-Webhook-Token': webhookToken }),
-                        },
-                        body: JSON.stringify(webhookPayload),
-                    })
-
-                    webhookSuccess = webhookResponse.ok
-
-                    if (!webhookSuccess) {
-                        console.warn('n8n webhook submission failed:', webhookResponse.status)
-                    }
-                } catch (webhookError) {
-                    console.warn('n8n webhook error (continuing with Web3Forms):', webhookError)
-                }
-            }
-
-            // === 2. Submit to Web3Forms (backup - for email notification) ===
-            const submitData = new FormData()
-            submitData.append('access_key', process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY || '')
-            submitData.append('name', fullName)
-            submitData.append('email', formData.email)
-            submitData.append('message', formData.message)
-            submitData.append('from_name', fullName)
-            submitData.append('subject', `New Contact Form Submission from ${fullName}`)
-
-            const response = await fetch('https://api.web3forms.com/submit', {
+            // Submit to Cloudflare Pages Function
+            const response = await fetch('/api/contact', {
                 method: 'POST',
-                body: submitData
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    email: formData.email,
+                    message: formData.message,
+                    honeypot: honeypot,  // Pass to server for re-validation
+                    formLoadTime: formLoadTime,  // Pass to server for timing check
+                }),
             })
 
             const data = await response.json()
 
-            // Success if either submission worked (prefer both, but one is enough)
-            if (data.success || webhookSuccess) {
+            if (response.ok && data.success) {
                 // Increment submission count for rate limiting
                 setSubmissionCount(prev => prev + 1)
 
@@ -223,7 +171,7 @@ export function Contact() {
             } else {
                 setStatus({
                     type: 'error',
-                    message: t('errorMessage'),
+                    message: data.message || t('errorMessage'),
                 })
             }
         } catch (error) {
