@@ -4,6 +4,14 @@ interface Env {
   WEB3FORMS_ACCESS_KEY: string
 }
 
+interface EventContext {
+  request: Request
+  env: Env
+  params: Record<string, string>
+  waitUntil: (promise: Promise<any>) => void
+  next: (input?: Request | string, init?: RequestInit) => Promise<Response>
+}
+
 interface ContactFormRequest {
   firstName: string
   lastName: string
@@ -33,7 +41,7 @@ export const onRequestOptions = async () => {
 }
 
 // Main POST handler
-export const onRequestPost = async (context) => {
+export const onRequestPost = async (context: EventContext) => {
   const corsHeaders = {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
