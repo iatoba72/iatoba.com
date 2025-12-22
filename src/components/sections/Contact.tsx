@@ -133,8 +133,12 @@ export function Contact() {
         setStatus({ type: 'loading' })
 
         try {
-            // Submit to Cloudflare Pages Function
-            const response = await fetch('/api/contact', {
+            const fullName = `${formData.firstName} ${formData.lastName}`
+
+            // === DUAL SUBMISSION: n8n (server-side) + Web3Forms (client-side) ===
+
+            // 1. Submit to Cloudflare Pages Function (n8n webhook with hidden credentials)
+            const apiPromise = fetch('/api/contact', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -144,15 +148,44 @@ export function Contact() {
                     lastName: formData.lastName,
                     email: formData.email,
                     message: formData.message,
-                    honeypot: honeypot,  // Pass to server for re-validation
-                    formLoadTime: formLoadTime,  // Pass to server for timing check
+                    honeypot: honeypot,
+                    formLoadTime: formLoadTime,
                 }),
             })
 
-            const data = await response.json()
+            // 2. Submit to Web3Forms (client-side, allowed on free plan)
+            const web3formsData = new FormData()
+            web3formsData.append('access_key', process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY || '')
+            web3formsData.append('name', fullName)
+            web3formsData.append('email', formData.email)
+            web3formsData.append('message', formData.message)
+            web3formsData.append('from_name', fullName)
+            web3formsData.append('subject', `New Contact Form Submission from ${fullName}`)
 
-            if (response.ok && data.success) {
-                // Increment submission count for rate limiting
+            const web3formsPromise = fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                body: web3formsData
+            })
+
+            // Wait for both submissions to complete
+            const [apiResponse, web3Response] = await Promise.allSettled([apiPromise, web3formsPromise])
+
+            // Check if at least one succeeded
+            let apiSuccess = false
+            let web3Success = false
+
+            if (apiResponse.status === 'fulfilled') {
+                const data = await apiResponse.value.json()
+                apiSuccess = apiResponse.value.ok && data.success
+            }
+
+            if (web3Response.status === 'fulfilled') {
+                const data = await web3Response.value.json()
+                web3Success = data.success === true
+            }
+
+            // Success if either submission worked
+            if (apiSuccess || web3Success) {
                 setSubmissionCount(prev => prev + 1)
 
                 setStatus({
@@ -171,7 +204,7 @@ export function Contact() {
             } else {
                 setStatus({
                     type: 'error',
-                    message: data.message || t('errorMessage'),
+                    message: t('errorMessage'),
                 })
             }
         } catch (error) {

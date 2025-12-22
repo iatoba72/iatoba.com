@@ -1,7 +1,6 @@
 interface Env {
   N8N_WEBHOOK_URL: string
   N8N_WEBHOOK_TOKEN: string
-  WEB3FORMS_ACCESS_KEY: string
 }
 
 interface EventContext {
@@ -25,7 +24,6 @@ interface ContactFormResponse {
   success: boolean
   message?: string
   webhookSuccess?: boolean
-  web3formsSuccess?: boolean
 }
 
 // Handle CORS preflight
@@ -184,7 +182,8 @@ export const onRequestPost = async (context: EventContext) => {
         webhookSuccess = webhookResponse.ok
 
         if (!webhookSuccess) {
-          console.warn('[Contact] n8n webhook failed:', webhookResponse.status)
+          const errorText = await webhookResponse.text()
+          console.warn('[Contact] n8n webhook failed:', webhookResponse.status, errorText)
         } else {
           console.log('[Contact] n8n webhook success')
         }
@@ -193,53 +192,20 @@ export const onRequestPost = async (context: EventContext) => {
       }
     }
 
-    // === SUBMISSION 2: WEB3FORMS BACKUP ===
-
-    let web3formsSuccess = false
-
-    if (context.env.WEB3FORMS_ACCESS_KEY) {
-      try {
-        const formData = new FormData()
-        formData.append('access_key', context.env.WEB3FORMS_ACCESS_KEY)
-        formData.append('name', fullName)
-        formData.append('email', requestData.email)
-        formData.append('message', requestData.message)
-        formData.append('from_name', fullName)
-        formData.append('subject', `New Contact Form Submission from ${fullName}`)
-
-        const web3response = await fetch('https://api.web3forms.com/submit', {
-          method: 'POST',
-          body: formData
-        })
-
-        const web3data = await web3response.json()
-        web3formsSuccess = web3data.success === true
-
-        if (!web3formsSuccess) {
-          console.warn('[Contact] Web3Forms failed')
-        } else {
-          console.log('[Contact] Web3Forms success')
-        }
-      } catch (web3error) {
-        console.warn('[Contact] Web3Forms error:', web3error)
-      }
-    }
-
     // === RESPONSE ===
 
-    // Success if either submission worked
-    if (webhookSuccess || web3formsSuccess) {
+    // Return success if n8n webhook succeeded
+    if (webhookSuccess) {
       return new Response(
         JSON.stringify({
           success: true,
           webhookSuccess,
-          web3formsSuccess,
         } as ContactFormResponse),
         { headers: corsHeaders }
       )
     }
 
-    // Both failed
+    // Webhook failed
     return new Response(
       JSON.stringify({
         success: false,
