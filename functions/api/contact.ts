@@ -1,5 +1,3 @@
-import type { PagesFunction } from '@cloudflare/workers-types'
-
 interface Env {
   N8N_WEBHOOK_URL: string
   N8N_WEBHOOK_TOKEN: string
@@ -23,7 +21,7 @@ interface ContactFormResponse {
 }
 
 // Handle CORS preflight
-export const onRequestOptions: PagesFunction = async () => {
+export const onRequestOptions = async () => {
   return new Response(null, {
     status: 204,
     headers: {
@@ -35,7 +33,7 @@ export const onRequestOptions: PagesFunction = async () => {
 }
 
 // Main POST handler
-export const onRequestPost: PagesFunction<Env> = async (context) => {
+export const onRequestPost = async (context) => {
   const corsHeaders = {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
